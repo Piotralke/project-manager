@@ -10,12 +10,12 @@ export default function Layout() {
 
   return (
     <div className="flex flex-col min-h-screen"> 
-      <div className="flex flex-row">
+      <div className="flex flex-col lg:flex-row">
         {/* Pasek nawigacji */}
         <div
           className={`${
-            menuCollapsed ? "w-1/12" : "w-1/6"
-          } sticky top-0 h-screen bg-gray-900 transition-all ease-linear duration-200`}
+            menuCollapsed ? "lg:w-1/12" : "lg:w-1/6"
+          } w-full sticky top-0 lg:h-screen h-1/6 bg-gray-900 transition-all ease-linear duration-200`}
         >
           <Navigation></Navigation>
         </div>

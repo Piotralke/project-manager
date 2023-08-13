@@ -1,8 +1,14 @@
 const TOGGLE_MENU = "TOGGLE_MENU";
+const SET_STATE = "SET_STATE";
 
 // Akcje kreatorów
 export const toggleMenu = () => ({
   type: TOGGLE_MENU,
+});
+
+export const setMenuState = (menuCollapsed) => ({
+  type: SET_STATE,
+  state: menuCollapsed,
 });
 
 // Początkowy stan
@@ -17,6 +23,12 @@ const menuReducer = (state = initialState, action) => {
       return {
         ...state,
         menuCollapsed: !state.menuCollapsed,
+      };
+    case SET_STATE:
+      console.log("CIPKA")
+      return {
+        ...state,
+        menuCollapsed: action.state,
       };
     default:
       return state;
