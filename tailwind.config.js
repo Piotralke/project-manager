@@ -16,8 +16,14 @@ module.exports = withMT({
         '4/7': '57.1428571%',
         '5/7': '71.4285714%',
         '6/7': '85.7142857%',
+      },
+      gridTemplateRows: {
+        // Simple 8 row grid
+        '8': 'repeat(8, minmax(0, 1fr))'
+      },
+      gridRow: {
+        'span-7': 'span 7 / span 7',
       }
-
     },
   },
   plugins: [],
