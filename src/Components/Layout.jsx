@@ -15,13 +15,13 @@ export default function Layout() {
         <div
           className={`${
             menuCollapsed ? "lg:w-1/12" : "lg:w-1/6"
-          } w-full sticky top-0 lg:h-screen h-1/6 bg-gray-900 transition-all ease-linear duration-200`}
+          } w-full z-10 sticky top-0 lg:h-screen h-1/6 bg-gray-900 transition-all ease-linear duration-200`}
         >
           <Navigation></Navigation>
         </div>
 
         {/* Kontent strony */}
-        <div className="flex-grow">
+        <div className="z-0 flex-grow">
           <Outlet></Outlet>
         </div>
       </div>

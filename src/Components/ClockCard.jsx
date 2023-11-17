@@ -25,8 +25,8 @@ export default function ClockCard() {
   };
 
   return (
-    <Card className="col-span-2 row-span-1 p-5 flex items-center justify-center">
-      <Typography variant="h1" className="text-center truncate">{formattedTime()}</Typography>
+    <Card className="flex items-center justify-center col-span-2 row-span-1 p-5">
+      <Typography className="text-2xl font-bold text-center truncate">{formattedTime()}</Typography>
     </Card>
   );
 }

@@ -44,8 +44,8 @@ const Calendar = () => {
     const currentMonth = new Date().getMonth();
     const today = new Date();
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
+      'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'
     ];
 
     return (
@@ -55,14 +55,14 @@ const Calendar = () => {
           const firstDayOfWeek = (new Date(currentYear, monthIndex, 1).getDay() + 6) % 7;
 
           return (
-            <div key={monthIndex} className="p-1 border rounded-md">
-              <CardHeader color="indigo" contentPosition="left">
+            <div key={monthIndex} className="p-1 my-2 border rounded-md">
+              <CardHeader color="amber" className="flex items-center justify-center" contentPosition="left">
                 <Typography color="white" variant="h6">{month}</Typography>
               </CardHeader>
               <div className="grid grid-cols-7 ">
                 {/* Nagłówki dni tygodnia */}
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((dayName, dayIndex) => (
-                  <div key={dayIndex} className="text-center font-semibold py-1">{dayName}</div>
+                {['P', 'W', 'Ś', 'C', 'Pt', 'S', 'N'].map((dayName, dayIndex) => (
+                  <div key={dayIndex} className="py-1 font-semibold text-center">{dayName}</div>
                 ))}
                 {/* Dni miesiąca */}
                 {monthDays.map(({ day, isCurrentMonth }, dayIndex) => {
@@ -96,8 +96,8 @@ const Calendar = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-full p-4">
-      <div className="max-w-screen-lg w-full">
+    <div className="flex items-center justify-center h-full p-4">
+      <div className="w-full max-w-screen-lg">
         {generateCalendar()}
       </div>
     </div>
