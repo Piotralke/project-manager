@@ -60,7 +60,7 @@ export default function Navigation() {
   const openDrawer = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
   return (
-    <div>
+    <>
       {windowWidth >= 960 ? (
         <div
           className={`menuCollapsed ? "basis-1/12" : "basis-1/6" flex flex-col w-full h-full p-5 space-y-5 transition-all duration-200 ${
@@ -128,6 +128,6 @@ export default function Navigation() {
           </Drawer>
         </React.Fragment>
       )}
-    </div>
+    </>
   );
 }
