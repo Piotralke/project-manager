@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { format, addDays, startOfMonth, endOfMonth, startOfWeek, getISOWeek, isWithinInterval } from 'date-fns';
 import { Button } from '@material-tailwind/react';
+
 const MonthlyCalendar = () => {
   const currentDate = new Date();
   const [year, setYear] = useState(currentDate.getFullYear());
@@ -12,6 +13,7 @@ const MonthlyCalendar = () => {
   ]);
   const [tasks, setTasks] = useState([
     { date: new Date(year, month, 8), title: 'Zadanie 1' },
+    { date: new Date(year, month, 12), title: 'Zadanie 2' },
     // Dodaj inne zadania tutaj
   ]);
 
@@ -79,21 +81,31 @@ const MonthlyCalendar = () => {
               <div className="col-span-1 text-right font-bold p-11 ">
                 {week.weekNumber}
               </div>
-              {week.daysInWeek.map((day, dayIndex) => (
-                <div
-                  key={`day-${dayIndex}`}
-                  className={`col-span-1 text-center font-bold cursor-pointer p-11 ${
-                    day && day.getMonth() === month ? 'text-black' : 'text-gray-400'
-                  }`}
-                  onClick={() => selectDay(day)}
-                  style={{
-                    background: isWithinInterval(day, { start: events[0].startDate, end: events[0].endDate }) ? '#3490dc' :
-                      isWithinInterval(day, { start: tasks[0].date, end: tasks[0].date }) ? '#38a169' : 'transparent',
-                  }}
-                >
-                  {day ? format(day, 'd') : ''}
-                </div>
-              ))}
+              {week.daysInWeek.map((day, dayIndex) => {
+                const eventForDay = events.find(event =>
+                  isWithinInterval(day, { start: event.startDate, end: event.endDate })
+                );
+                const tasksForDay = tasks.filter(task =>
+                  isWithinInterval(day, { start: task.date, end: task.date })
+                );
+
+                return (
+                  <div
+                    key={`day-${dayIndex}`}
+                    className={`col-span-1 text-center font-bold cursor-pointer p-11 ${
+                      day && day.getMonth() === month ? 'text-black' : 'text-gray-400'
+                    }`}
+                    onClick={() => selectDay(day)}
+                    style={{
+                      background: eventForDay && tasksForDay.length > 0
+                        ? 'linear-gradient(#3490dc, #38a169)'
+                        : eventForDay ? '#3490dc' : tasksForDay.length > 0 ? '#38a169' : 'transparent',
+                    }}
+                  >
+                    {day ? format(day, 'd') : ''}
+                  </div>
+                );
+              })}
             </React.Fragment>
           ))}
         </div>

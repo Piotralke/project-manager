@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-
+import {useParams } from "react-router-dom";
 import {
   BiArrowToRight,
   BiArrowToLeft,
   BiSolidArrowToRight,
+  BiTask
 } from "react-icons/bi";
 import { BsStack } from "react-icons/bs";
 import { IoHome } from "react-icons/io5";
@@ -38,36 +39,29 @@ function NavigationItem(props) {
 }
 
 
-export default function Navigation() {
+export default function ProjectNavigation() {
   const menuCollapsed = useSelector((state) => state.menuCollapsed);
   const dispatch = useDispatch();
+  const {projectId} = useParams();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const handleToggleMenu = () => {
     dispatch(toggleMenu());
   };
-  function NavigationContent() {
+  function NavigationContent(props) {
     return (
       <>
         <NavigationItem
-          icon={IoHome}
-          name="Strona główna"
-          link="/home"
-          collapsed={menuCollapsed}
-          showText={!menuCollapsed}
-          inDrawer={windowWidth < 960}
-        ></NavigationItem>
-        <NavigationItem
-          icon={FaCalendarDays}
-          name="Kalendarz"
-          link="/calendar"
+          icon={BsStack}
+          name="Przegląd"
+          link={`/projects/${projectId}`}
           collapsed={menuCollapsed}
           showText={!menuCollapsed}
           inDrawer={windowWidth < 960} 
         ></NavigationItem>
         <NavigationItem
-          icon={BsStack}
-          name="Projekty"
-          link="/projects"
+          icon={BiTask}
+          name="Zadania"
+          link={`/projects/${projectId}/tasks`}
           collapsed={menuCollapsed}
           showText={!menuCollapsed}
           inDrawer={windowWidth < 960} 
@@ -112,7 +106,14 @@ export default function Navigation() {
               onClick={handleToggleMenu}
             ></BiArrowToLeft>
           )}
-
+        <NavigationItem
+          icon={IoHome}
+          name="Strona główna"
+          link="/home"
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960}
+        ></NavigationItem>
           <div className="h-0.5 w-full bg-gray-400"></div>
           <NavigationContent></NavigationContent>
         </div>

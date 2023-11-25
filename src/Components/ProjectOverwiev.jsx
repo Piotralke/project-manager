@@ -3,6 +3,7 @@ import { AiOutlineSnippets } from "react-icons/ai";
 import { Typography } from "@material-tailwind/react";
 import { FaArrowRight,FaRegEyeSlash  } from "react-icons/fa";
 import { FaEarthAfrica } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 export default function ProjectOverview() {
     const [projectData, setProjectData] = useState({
         uuid: "123-321-123",
@@ -16,7 +17,7 @@ export default function ProjectOverview() {
     const avatarUrl = "https://i.pravatar.cc/300";
 
     return (
-        <div className="flex flex-row w-full h-full p-3 border border-gray-400 rounded-xl ">
+        <div className="flex flex-row w-full h-full p-3 border border-gray-400 rounded-xl bg-gray-300 items-center justify-center">
             <section className="flex basis-1/2">
                 <div className="flex flex-col">
                     <div className="flex flex-row mb-2">
@@ -58,7 +59,9 @@ export default function ProjectOverview() {
                 </div>
             </section>
             <section className="flex basis-1/12 justify-center items-center h-full">
-                <FaArrowRight className="w-10 h-10 m-atuo"></FaArrowRight>
+                <Link to={`/projects/${projectData.uuid}`}>
+                  <FaArrowRight className="w-10 h-10 m-atuo"></FaArrowRight>
+                </Link>
             </section>
         </div>
     );
