@@ -12,7 +12,7 @@ export default function IncomingEvent({ isEvent }) {
         uuid: "321-321-321",
         title: "Zrobienie bazy danych",
         description: "Jakistam opis",
-        dueTo: "2023-11-26T15:16:40.942694+02:00",
+        dueTo: "2023-11-26T15:18:40.942694+02:00",
         startTime: "2023-11-26T15:16:40.942694+02:00",
         type: "EVENT", // "TASK"
       });
@@ -30,7 +30,7 @@ export default function IncomingEvent({ isEvent }) {
 
   // Function to calculate remaining time
   const calculateRemainingTime = () => {
-    const dueTime = new Date(event?.type === "TASK" ? event?.startTime : event?.dueTo);
+    const dueTime = new Date(event?.startTime);
     const timeDifference = dueTime - currentTime;
 
     if (timeDifference <= 0) {
@@ -70,6 +70,7 @@ export default function IncomingEvent({ isEvent }) {
       <Typography variant="small">
         {isEvent ? "Rozpoczyna się:" : "Wykonać do:"} {new Date(event?.startTime).toLocaleString()}
       </Typography>
+      {isEvent===true && (<Typography variant="small">Zakończy się: {new Date(event?.dueTo).toLocaleString()} </Typography>) }
       <Typography variant="small">
         Pozostało: {calculateRemainingTime()}
       </Typography>
