@@ -73,8 +73,8 @@ export default function Message() {
 
     return (
         <div className="flex flex-row">
-            <Avatar className="flex-grow mt-auto" src="https://i.pravatar.cc/300"></Avatar>
-            <div className="flex flex-col text-left p-1 space-y-1">
+            <Avatar className="mt-auto" src="https://i.pravatar.cc/300"></Avatar>
+            <div className="flex flex-col text-left p-1 space-y-1 mt-auto">
                 <Typography variant="small">{message.sender.name} {message.sender.surname}</Typography>
                 <div className="rounded-xl bg-white p-2">
                     <Typography variant="small">{message.content}</Typography>

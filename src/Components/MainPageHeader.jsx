@@ -23,7 +23,7 @@ export default function MainPageHeader () {
             <Typography variant="lead">Username</Typography>
             <Avatar src="https://i.pravatar.cc/300"></Avatar>
             <Badge content={`${notifications.length}`} className={`${notifications.length > 0 ? null : "hidden"}`}>
-                <Popover placement="bottom">
+                <Popover placement="bottom-start">
                     <PopoverHandler>
                         <Button className="flex bg-amber-400 rounded-full w-16 h-16 place-content-center items-center justify-center">
                             <BiBell className="w-8 h-8 text-black"></BiBell>

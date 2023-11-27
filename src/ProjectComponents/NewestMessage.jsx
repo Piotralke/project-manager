@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { TbMessageCirclePlus } from "react-icons/tb";
 import { Avatar, Typography } from "@material-tailwind/react";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import Message from "./Message";
+import ChatInput from "./ChatInput";
 export default function NewestMessage () {
     const {projectId} = useParams()
 
@@ -25,13 +27,15 @@ export default function NewestMessage () {
     })
 
     return(
-        <div className="flex flex-col text-center p-4 space-y-2">
+        <div className="flex flex-col text-center p-4 space-y-2 h-full">
             <div className="flex flex-row self-center space-x-2">
                 <TbMessageCirclePlus className="w-7 h-7"></TbMessageCirclePlus>
                 <Typography variant="h5">Najnowsza wiadomość</Typography>
             </div>
-            <div className="flex flex-row bg-gray-300 rounded-xl p-3">
+            <div className="flex flex-col bg-gray-300 rounded-xl p-3 flex-grow">
+                <BsThreeDotsVertical className="w-10 h-10 self-center flex-grow"></BsThreeDotsVertical>
                 <Message></Message>
+                <ChatInput></ChatInput>
             </div>
         </div>
     )
