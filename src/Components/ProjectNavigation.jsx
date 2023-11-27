@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import {useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   BiArrowToRight,
   BiArrowToLeft,
@@ -24,11 +24,10 @@ function NavigationItem(props) {
       <props.icon className="w-8 h-8 text-white transition-transform duration-100 ease-linear group-hover:text-amber-500 group-hover:scale-125 group-hover:cursor-pointer group-hover:animate-pulse" />
 
       <div
-        className={`ml-2 transition-opacity duration-500 ease-in-out ${
-          !props.collapsed || props.inDrawer
+        className={`ml-2 transition-opacity duration-500 ease-in-out ${!props.collapsed || props.inDrawer
             ? "opacity-100 max-w-full"
             : "opacity-0 max-w-0"
-        }`}
+          }`}
       >
         <div className="font-bold text-white truncate text-md group-hover:cursor-pointer group-hover:text-amber-500">
           {props.name}
@@ -42,7 +41,7 @@ function NavigationItem(props) {
 export default function ProjectNavigation() {
   const menuCollapsed = useSelector((state) => state.menuCollapsed);
   const dispatch = useDispatch();
-  const {projectId} = useParams();
+  const { projectId } = useParams();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const handleToggleMenu = () => {
     dispatch(toggleMenu());
@@ -56,7 +55,7 @@ export default function ProjectNavigation() {
           link={`/projects/${projectId}`}
           collapsed={menuCollapsed}
           showText={!menuCollapsed}
-          inDrawer={windowWidth < 960} 
+          inDrawer={windowWidth < 960}
         ></NavigationItem>
         <NavigationItem
           icon={BiTask}
@@ -64,7 +63,7 @@ export default function ProjectNavigation() {
           link={`/projects/${projectId}/tasks`}
           collapsed={menuCollapsed}
           showText={!menuCollapsed}
-          inDrawer={windowWidth < 960} 
+          inDrawer={windowWidth < 960}
         ></NavigationItem>
       </>
     );
@@ -91,9 +90,8 @@ export default function ProjectNavigation() {
     <>
       {windowWidth >= 960 ? (
         <div
-          className={`menuCollapsed ? "basis-1/12" : "basis-1/6" flex flex-col w-full h-full p-5 space-y-5 transition-all duration-200 ${
-            menuCollapsed ? "items-center" : "items-start"
-          }`}
+          className={`menuCollapsed ? "basis-1/12" : "basis-1/6" flex flex-col w-full h-full p-5 space-y-5 transition-all duration-200 ${menuCollapsed ? "items-center" : "items-start"
+            }`}
         >
           {menuCollapsed ? (
             <BiArrowToRight
@@ -106,14 +104,14 @@ export default function ProjectNavigation() {
               onClick={handleToggleMenu}
             ></BiArrowToLeft>
           )}
-        <NavigationItem
-          icon={IoHome}
-          name="Strona główna"
-          link="/home"
-          collapsed={menuCollapsed}
-          showText={!menuCollapsed}
-          inDrawer={windowWidth < 960}
-        ></NavigationItem>
+          <NavigationItem
+            icon={IoHome}
+            name="Strona główna"
+            link="/home"
+            collapsed={menuCollapsed}
+            showText={!menuCollapsed}
+            inDrawer={windowWidth < 960}
+          ></NavigationItem>
           <div className="h-0.5 w-full bg-gray-400"></div>
           <NavigationContent></NavigationContent>
         </div>
@@ -130,7 +128,14 @@ export default function ProjectNavigation() {
                 className="w-10 h-10 text-white transition-transform ease-linear hover:text-amber-500 hover:cursor-pointer hover:animate-pulse hover:scale-125"
                 onClick={closeDrawer}
               ></BiArrowToLeft>
-
+              <NavigationItem
+                icon={IoHome}
+                name="Strona główna"
+                link="/home"
+                collapsed={menuCollapsed}
+                showText={!menuCollapsed}
+                inDrawer={windowWidth < 960}
+              ></NavigationItem>
               <div className="h-0.5 w-full bg-gray-400"></div>
               <NavigationContent></NavigationContent>
             </div>

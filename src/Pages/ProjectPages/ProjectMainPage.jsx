@@ -4,6 +4,8 @@ import { useParams } from "react-router-dom";
 import IncomingEvent from "../../ProjectComponents/IncomingEvents";
 import ProjectHeader from "../../Components/ProjectHeader";
 import NewestMessage from "../../ProjectComponents/NewestMessage";
+import ProjectMembers from "../../ProjectComponents/ProjectMembers";
+import WeeklyCalendar from "../../ProjectComponents/WeeklyCalendar";
 
 export default function ProjectMainPage() {
 
@@ -18,24 +20,24 @@ export default function ProjectMainPage() {
     });
 
     return (
-        <div className="grid w-full h-full grid-cols-1 lg:grid-cols-4 gap-5 p-5 bg-gray-300 lg:grid-rows-8 grid-rows ">
+        <div className="grid w-full h-full grid-cols-1 lg:grid-cols-4 gap-5 p-5 bg-gray-300 lg:grid-rows-7 grid-rows ">
             <ProjectHeader></ProjectHeader>
-            <Card className="col-span-1 row-span-2">
+            <Card className="col-span-full lg:col-span-1 row-span-1">
                 <IncomingEvent isEvent={true}></IncomingEvent>
             </Card>
-            <Card className="col-span-1 row-span-2">
+            <Card className="col-span-full lg:col-span-1  row-span-1">
                 <IncomingEvent isEvent={false}></IncomingEvent>
             </Card>
-            <Card className="col-span-1 row-span-4">
+            <Card className="col-span-full lg:col-span-1 row-span-3">
                 <NewestMessage></NewestMessage>
             </Card>
-            <Card className="col-span-1 row-span-7">
-                dupa2
+            <Card className="col-span-full lg:col-span-1 row-span-6">
+                <ProjectMembers></ProjectMembers>
             </Card>
-            <Card className="col-span-2 row-span-2">
-                dupa3
+            <Card className="col-span-full lg:col-span-2 row-span-2">
+                <WeeklyCalendar></WeeklyCalendar>
             </Card>
-            <Card className="col-span-3 row-span-3">
+            <Card className="col-span-full lg:col-span-3 row-span-3">
                 dupa4
             </Card>
         </div>

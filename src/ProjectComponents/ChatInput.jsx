@@ -24,7 +24,7 @@ export default function ChatInput() {
   };
   const isButtonDisabled = !message && attachments.length === 0;
   return (
-    <div className="flex flex-row w-full m-1 space-x-2 p-1">
+    <div className="flex flex-row w-full space-x-2 p-1">
       <label htmlFor="fileInput" className="cursor-pointer">
         <TiAttachment className="w-10 h-10"></TiAttachment>
         <input
@@ -39,10 +39,9 @@ export default function ChatInput() {
         label="Wpisz wiadomość"
         onChange={handleChange}
       ></Input>
-      <Button color="amber" disabled={isButtonDisabled } onClick={sendMessage}>
+      <Button color="amber" className="flex justify-center items-center" disabled={isButtonDisabled } onClick={sendMessage}>
         <IoSend></IoSend>
       </Button>
-      
     </div>
   );
 }

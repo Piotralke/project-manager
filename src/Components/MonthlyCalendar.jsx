@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { format, addDays, startOfMonth, endOfMonth, startOfWeek, getISOWeek, isWithinInterval } from 'date-fns';
+import { format, addDays, startOfMonth, endOfMonth, startOfWeek, getISOWeek, isWithinInterval, isToday } from 'date-fns';
 import { Button } from '@material-tailwind/react';
 
 const MonthlyCalendar = () => {
@@ -94,7 +94,7 @@ const MonthlyCalendar = () => {
                     key={`day-${dayIndex}`}
                     className={`col-span-1 text-center font-bold cursor-pointer p-11 ${
                       day && day.getMonth() === month ? 'text-black' : 'text-gray-400'
-                    }`}
+                    } ${isToday(day) ? 'border border-red-500 rounded-xl' : ''}`}
                     onClick={() => selectDay(day)}
                     style={{
                       background: eventForDay && tasksForDay.length > 0
