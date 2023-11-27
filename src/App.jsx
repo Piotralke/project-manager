@@ -9,6 +9,7 @@ import store from "./store";
 import MainCalendar from "./Pages/MainCalendar";
 import Projects from "./Pages/Projects";
 import ProjectMainPage from "./Pages/ProjectPages/ProjectMainPage";
+import ProjectTasksPage from "./Pages/ProjectPages/ProjectTasksPage";
 function App() {
   return (
     <Provider store={store}>
@@ -20,6 +21,7 @@ function App() {
               <Route path="/calendar" element={<MainCalendar></MainCalendar>}></Route>
               <Route path="/projects" element={<Projects></Projects>}></Route>
               <Route path="/projects/:projectId" element={<ProjectMainPage></ProjectMainPage>}></Route>
+              <Route path="/projects/:projectId/tasks" element={<ProjectTasksPage></ProjectTasksPage>}></Route>
             </Route>
           </Routes>
         </BrowserRouter>

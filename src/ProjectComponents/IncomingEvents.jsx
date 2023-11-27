@@ -15,6 +15,7 @@ export default function IncomingEvent({ isEvent }) {
         dueTo: "2023-11-26T15:18:40.942694+02:00",
         startTime: "2023-11-26T15:16:40.942694+02:00",
         type: "EVENT", // "TASK"
+        
       });
     } else {
       setEvent({
@@ -24,6 +25,7 @@ export default function IncomingEvent({ isEvent }) {
         dueTo: "2023-11-26T15:16:40.942694+02:00",
         startTime: "2023-12-26T15:16:40.942694+02:00",
         type: "TASK", // "TASK"
+        
       });
     }
   }, [isEvent]); 
@@ -42,7 +44,7 @@ export default function IncomingEvent({ isEvent }) {
     const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
 
-    return  <span className={`${days>1? null:"text-red-400 font-bold"}`}>{`${days} d, ${hours} h, ${minutes} m, ${seconds}s`}</span>
+    return  <span className={`${days>=1? null:"text-red-400 font-bold"}`}>{`${days} d, ${hours} h, ${minutes} m, ${seconds}s`}</span>
   };
 
   useEffect(() => {
