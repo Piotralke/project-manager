@@ -101,7 +101,7 @@ export default function Message() {
                     </div>
                     : null}
             </div>
-            <Dialog size="xl" open={open} handler={() => setOpen(!open)} onClose={handleClose} className={`flex content-center bg-transparent items-center justify-center shadow-none`}>
+            <Dialog size="xl" open={open} handler={() => setOpen(!open)} onClick={handleClose} onClose={handleClose} className={`flex content-center bg-transparent items-center justify-center shadow-none`}>
                 <img src={selectedImage} alt="Preview" className={`flex w-[${imageSize.width}] h-[${imageSize.height}] self-center`} onClick={handleClose} />
             </Dialog>
         </div>

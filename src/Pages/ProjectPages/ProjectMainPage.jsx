@@ -6,6 +6,8 @@ import ProjectHeader from "../../Components/ProjectHeader";
 import NewestMessage from "../../ProjectComponents/NewestMessage";
 import ProjectMembers from "../../ProjectComponents/ProjectMembers";
 import WeeklyCalendar from "../../ProjectComponents/WeeklyCalendar";
+import ClockCard from "../../Components/ClockCard";
+import QuickNote from "../../ProjectComponents/QuickNote";
 
 export default function ProjectMainPage() {
 
@@ -20,7 +22,7 @@ export default function ProjectMainPage() {
     });
 
     return (
-        <div className="grid w-full h-full grid-cols-1 lg:grid-cols-4 gap-5 p-5 bg-gray-300 lg:grid-rows-7 grid-rows ">
+        <div className="grid w-full h-full grid-cols-1 lg:grid-cols-4 gap-5 p-5 bg-gray-300 lg:grid-rows-4 grid-rows ">
             <ProjectHeader></ProjectHeader>
             <Card className="col-span-full lg:col-span-1 row-span-1">
                 <IncomingEvent isEvent={true}></IncomingEvent>
@@ -28,17 +30,20 @@ export default function ProjectMainPage() {
             <Card className="col-span-full lg:col-span-1  row-span-1">
                 <IncomingEvent isEvent={false}></IncomingEvent>
             </Card>
-            <Card className="col-span-full lg:col-span-1 row-span-3">
+            
+            <Card className="col-span-full lg:col-span-1 row-span-2">
                 <NewestMessage></NewestMessage>
             </Card>
-            <Card className="col-span-full lg:col-span-1 row-span-6">
+            
+            <Card className="col-span-full lg:col-span-1 row-span-3">
                 <ProjectMembers></ProjectMembers>
             </Card>
+            
             <Card className="col-span-full lg:col-span-2 row-span-2">
                 <WeeklyCalendar></WeeklyCalendar>
             </Card>
-            <Card className="col-span-full lg:col-span-3 row-span-3">
-                dupa4
+            <Card className="col-span-full lg:col-span-1 row-span-1">
+                <QuickNote></QuickNote>
             </Card>
         </div>
     )
