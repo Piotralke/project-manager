@@ -10,7 +10,10 @@ import {
 import { BsStack } from "react-icons/bs";
 import { IoHome } from "react-icons/io5";
 import { FaCalendarDays } from "react-icons/fa6";
+import { LuMessagesSquare } from "react-icons/lu";
 import { useSelector, useDispatch } from "react-redux";
+import { FaChartGantt } from "react-icons/fa6";
+import { IoMdSettings } from "react-icons/io";
 import {
   Drawer,
   Button,
@@ -65,6 +68,38 @@ export default function ProjectNavigation() {
           showText={!menuCollapsed}
           inDrawer={windowWidth < 960}
         ></NavigationItem>
+        <NavigationItem
+          icon={LuMessagesSquare}
+          name="Dyskusja"
+          link={`/projects/${projectId}/chat`}
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960}
+        ></NavigationItem>
+         <NavigationItem
+          icon={FaCalendarDays}
+          name="Kalendarz"
+          link={`/projects/${projectId}/calendar`}
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960}
+        ></NavigationItem>
+        <NavigationItem
+          icon={FaChartGantt}
+          name="Wykres Gantta"
+          link={`/projects/${projectId}/gannt`}
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960}
+        ></NavigationItem>
+        <NavigationItem
+          icon={IoMdSettings}
+          name="Ustawienia projektu"
+          link={`/projects/${projectId}/settings`}
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960}
+        ></NavigationItem>
       </>
     );
   }
@@ -114,6 +149,7 @@ export default function ProjectNavigation() {
           ></NavigationItem>
           <div className="h-0.5 w-full bg-gray-400"></div>
           <NavigationContent></NavigationContent>
+          <Button className="w-full" color="red">Wyloguj</Button>
         </div>
       ) : (
         <React.Fragment>

@@ -25,7 +25,6 @@ const menuReducer = (state = initialState, action) => {
         menuCollapsed: !state.menuCollapsed,
       };
     case SET_STATE:
-      console.log("CIPKA")
       return {
         ...state,
         menuCollapsed: action.state,
