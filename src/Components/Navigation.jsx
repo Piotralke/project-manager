@@ -76,7 +76,6 @@ export default function Navigation() {
     );
   }
   const handleResize = () => {
-    console.log(window.innerWidth);
     if (window.innerWidth < 1140) dispatch(setMenuState(true));
     else dispatch(setMenuState(false));
     setWindowWidth(window.innerWidth);

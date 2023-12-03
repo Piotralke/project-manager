@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Typography, CardBody, Avatar, Badge, Button, Popover, PopoverHandler, PopoverContent } from "@material-tailwind/react";
 import { Card } from "@material-tailwind/react";
 import ClockCard from "../Components/ClockCard";
@@ -10,8 +10,15 @@ import { FaArrowRight, FaEllipsisH } from "react-icons/fa";
 import Calendar from "../Components/YearlyCalendar";
 import ProjectOverwiev from "../Components/ProjectOverwiev";
 import MainPageHeader from "../Components/MainPageHeader";
+import { useAuth } from "../auth";
 export default function HomePage() {
+    const auth = useAuth();
+    
+    useEffect(()=>{
+        
+        console.log(auth.getUser())
 
+    },[])
     const [userProjects, setUserProjects] = useState([{
         uuid: "123-321-123",
         title: "Project-Manager",
@@ -88,7 +95,7 @@ export default function HomePage() {
                     </div>
                 </CardBody>
             </Card>
-
+        
         </div>
     )
 }

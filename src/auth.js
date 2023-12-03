@@ -1,6 +1,6 @@
 // auth.js
 import { useQueryClient, useQuery } from 'react-query';
-
+import axios from 'axios';
 const TOKEN_KEY = 'oc5NoAPZL7JjoHWkZVF2xxufqzMtyXcA';
 
 // Pobierz dane użytkownika z API w oparciu o token
@@ -8,18 +8,17 @@ const fetchUser = async () => {
   const token = localStorage.getItem(TOKEN_KEY);
   if (!token) return null;
 
-  const response = await fetch('your_user_info_endpoint', {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  try {
+    const response = await axios.get('http://localhost:5048/api/users/current', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    });
 
-  if (!response.ok) {
+    return response.data;
+  } catch (error) {
     throw new Error('Failed to fetch user data');
   }
-
-  return response.json();
 };
 
 export function useAuth() {
@@ -38,15 +37,21 @@ export function useAuth() {
     localStorage.removeItem(TOKEN_KEY);
     queryClient.setQueryData('token', null);
   };
-
-  const { data: user } = useQuery('user', fetchUser, {
-    enabled: !!getToken(), // Pobierz dane użytkownika tylko, gdy jest dostępny token
-  });
+  const getUser = async () => {
+    await fetchUser().then( (response)=>{
+      console.log(response)
+      return response
+    }
+    );
+  };
+  // const { data: user } = useQuery('user', fetchUser, {
+  //   enabled: !!getToken(), // Pobierz dane użytkownika tylko, gdy jest dostępny token
+  // });
 
   return {
     setToken,
     getToken,
     removeToken,
-    user,
+    getUser,
   };
 }

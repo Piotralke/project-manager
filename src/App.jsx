@@ -12,6 +12,7 @@ import ProjectMainPage from "./Pages/ProjectPages/ProjectMainPage";
 import ProjectTasksPage from "./Pages/ProjectPages/ProjectTasksPage";
 import ProjectChat from "./Pages/ProjectPages/ProjectChat";
 import { QueryClientProvider, QueryClient } from "react-query";
+import LoginPage from "./Pages/LoginPage";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ function App() {
         <ThemeProvider>
           <BrowserRouter>
             <Routes>
+              <Route index element={<LoginPage></LoginPage>}></Route>
               <Route path="/" element={<Layout></Layout>}>
                 <Route path="/home" element={<HomePage></HomePage>}></Route>
                 <Route path="/calendar" element={<MainCalendar></MainCalendar>}></Route>
