@@ -38,11 +38,12 @@ export function useAuth() {
     queryClient.setQueryData('token', null);
   };
   const getUser = async () => {
-    await fetchUser().then( (response)=>{
-      console.log(response)
-      return response
+    try {
+      const response = await fetchUser();
+      return response;
+    } catch (error) {
+      throw new Error('Failed to fetch user data');
     }
-    );
   };
   // const { data: user } = useQuery('user', fetchUser, {
   //   enabled: !!getToken(), // Pobierz dane użytkownika tylko, gdy jest dostępny token

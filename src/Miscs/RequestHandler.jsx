@@ -1,11 +1,18 @@
 import axios from 'axios';
+import { useAuth } from '../auth';
 
-const BASE_URL = 'http://localhost:5048'; // Zmień na adres API, z którym chcesz komunikować się
+const BASE_URL = 'http://localhost:5048';
 
 const RequestHandler = {
-  get: async (endpoint, params = {}) => {
+  get: async (endpoint, params = {}, token) => {
     try {
-      const response = await axios.get(`${BASE_URL}${endpoint}`, { params });
+      const response = await axios.get(`${BASE_URL}${endpoint}`, {
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       return response.data;
     } catch (error) {
       handleRequestError(error);
@@ -13,9 +20,14 @@ const RequestHandler = {
     }
   },
 
-  post: async (endpoint, data = {}) => {
+  post: async (endpoint, data = {}, token) => {
     try {
-      const response = await axios.post(`${BASE_URL}${endpoint}`, data);
+      const response = await axios.post(`${BASE_URL}${endpoint}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       return response.data;
     } catch (error) {
       handleRequestError(error);
@@ -24,11 +36,9 @@ const RequestHandler = {
   },
 
   // Dodaj inne metody, takie jak put, delete, itp., w razie potrzeby
-
 };
 
 const handleRequestError = (error) => {
-  // Tutaj możesz obsłużyć błędy zapytań, np. wyświetlić komunikat dla użytkownika lub zalogować błąd
   console.error('Request failed:', error.message);
 };
 
