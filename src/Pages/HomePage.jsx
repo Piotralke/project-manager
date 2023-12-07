@@ -11,6 +11,7 @@ import Calendar from "../Components/YearlyCalendar";
 import ProjectOverwiev from "../Components/ProjectOverwiev";
 import MainPageHeader from "../Components/MainPageHeader";
 import { useAuth } from "../auth";
+import { useNavigate } from "react-router-dom";
 export default function HomePage() {
     const auth = useAuth();
     
@@ -43,7 +44,7 @@ export default function HomePage() {
         createdAt: "2023-10-26 15:16:40.942694+02",
         isPrivate: true,
     }]);
-    
+    const navigate = useNavigate();
     return (
         <div className="grid w-full h-full grid-cols-1 lg:grid-cols-5 gap-5 p-5 bg-gray-300 lg:grid-rows-8 grid-rows ">
             <MainPageHeader></MainPageHeader>
@@ -63,7 +64,7 @@ export default function HomePage() {
                         <MdPushPin className="w-6 h-6" />
                         <Typography variant="h6">Przypięty projekt</Typography>
                     </div>
-                    <ProjectOverwiev />
+                    <ProjectOverwiev projectUuid={auth.getUser().pinnedProjectUuid}/>
                 </CardBody>
             </Card>
             <Card className="col-span-full lg:col-span-2 row-span-4">
@@ -88,10 +89,10 @@ export default function HomePage() {
                                 </div>
                             </Fragment>
                         ))}
-                        <div className="flex flex-grow flex-row space-x-4 place-content-center items-center justify-center py-2">
+                        <button className="flex flex-grow w-full hover:bg-gray-100 flex-row space-x-4 place-content-center items-center justify-center py-2" onClick={()=>navigate('/projects')}>
                             <FaEllipsisH className="w-6 h-6" />
                             <Typography variant="h6">Wszystkie projekty</Typography>
-                        </div>
+                        </button>
                     </div>
                 </CardBody>
             </Card>

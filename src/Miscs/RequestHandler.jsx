@@ -4,7 +4,7 @@ import { useAuth } from '../auth';
 const BASE_URL = 'http://localhost:5048';
 
 const RequestHandler = {
-  get: async (endpoint, params = {}, token) => {
+  get: async (endpoint, token,params = {},) => {
     try {
       const response = await axios.get(`${BASE_URL}${endpoint}`, {
         params,
@@ -20,7 +20,7 @@ const RequestHandler = {
     }
   },
 
-  post: async (endpoint, data = {}, token) => {
+  post: async (endpoint, token, data = {}) => {
     try {
       const response = await axios.post(`${BASE_URL}${endpoint}`, data, {
         headers: {

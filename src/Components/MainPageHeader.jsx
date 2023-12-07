@@ -14,7 +14,7 @@ export default function MainPageHeader() {
             const user = await auth.getUser()
             console.log(user)
             setUserData(user)
-            const profilePic = await RequestHandler.get(`/api/users/profile-picture?userId=${user.uuid}`,null,auth.getToken())
+            const profilePic = await RequestHandler.get(`/api/users/profile-picture?userId=${user.uuid}`,auth.getToken())
             console.log(profilePic)
             setUserPic(profilePic)
             }
@@ -38,7 +38,7 @@ export default function MainPageHeader() {
     return (
         <section className="flex w-full col-span-full">
             <div className="flex-grow">
-                <Typography variant="h2" className="font-bold">Hello, {userData?.name + " " + userData?.surname}</Typography>
+                <Typography variant="h2" className="font-bold">Witaj, {userData?.name + " " + userData?.surname}</Typography>
             </div>
             <section className="flex flex-row space-x-3">
                 <Typography variant="lead">{userData?.name + " " + userData?.surname}</Typography>

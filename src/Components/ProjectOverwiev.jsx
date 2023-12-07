@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineSnippets } from "react-icons/ai";
-import { Typography } from "@material-tailwind/react";
+import { Avatar, Typography } from "@material-tailwind/react";
 import { FaArrowRight,FaRegEyeSlash  } from "react-icons/fa";
 import { FaEarthAfrica } from "react-icons/fa6";
 import { Link } from "react-router-dom";
-export default function ProjectOverview() {
+import RequestHandler from "../Miscs/RequestHandler";
+import { useAuth } from "../auth";
+export default function ProjectOverview(projectUuid) {
+    const auth = useAuth();
     const [projectData, setProjectData] = useState({
         uuid: "123-321-123",
         title: "Project-Manager",
@@ -13,7 +16,17 @@ export default function ProjectOverview() {
         createdAt: "2023-10-26 15:16:40.942694+02",
         isPrivate: false,
     });
+    useEffect(()=>{
 
+        const fetchProject = async () =>{
+            const data = await RequestHandler.get(`/api/projects/${projectUuid}`,auth.getToken())
+            setProjectData(projectData)
+        }
+
+        if(projectUuid){
+            fetchProject().catch(console.error)
+        }
+    },[projectUuid])
     const avatarUrl = "https://i.pravatar.cc/300";
 
     return (
@@ -29,14 +42,11 @@ export default function ProjectOverview() {
                     <div className="flex flex-row">
                         <div className="flex">
                             {Array.from({ length: 5 }, (_, index) => (
-                                <div
+                                <Avatar
                                     key={index}
-                                    className="w-10 h-10 bg-cover bg-center rounded-full border-2 border-black -ml-2 relative z-10"
-                                    style={{
-                                        backgroundImage: `url(${avatarUrl})`,
-                                        transform: `translateX(${index * -6}px)`,
-                                    }}
-                                ></div>
+                                    src={avatarUrl}
+                                   className="bg-cover bg-center rounded-full border-2 border-black -ml-2 relative z-10"
+                                ></Avatar>
                             ))}
                         </div>
                     </div>

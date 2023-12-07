@@ -1,8 +1,29 @@
 import { Typography, CardBody, Avatar, Badge, Button, Popover, PopoverHandler, PopoverContent } from "@material-tailwind/react";
-import { useState } from "react";
 import { BiBell } from "react-icons/bi";
+import { useAuth } from "../auth";
+import { useState,useEffect } from "react";
+import RequestHandler from "../Miscs/RequestHandler";
 export default function ProjectHeader() {
 
+
+
+    const [userData, setUserData] = useState({});
+    const [userPic,setUserPic] = useState();
+    const auth = useAuth();
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const user = await auth.getUser()
+            console.log(user)
+            setUserData(user)
+            const profilePic = await RequestHandler.get(`/api/users/profile-picture?userId=${user.uuid}`,auth.getToken())
+            setUserPic(profilePic)
+            }
+        
+        fetchUser().catch(console.error)
+        
+
+    }, [])
     const [projectData, setProjectData] = useState({
         uuid: "123-321-123",
         title: "Project-Manager",
@@ -32,8 +53,8 @@ export default function ProjectHeader() {
                 <Typography variant="paragraph">{projectData.description}</Typography>
             </div>
             <section className="flex flex-row space-x-3">
-                <Typography variant="lead">Username</Typography>
-                <Avatar src="https://i.pravatar.cc/300"></Avatar>
+                <Typography variant="lead">{userData?.name + " " +userData?.surname}</Typography>
+                <Avatar src={`data:image/jpeg;base64,${userPic}`}></Avatar>
                 <Badge content={`${notifications.length}`} className={`${notifications.length > 0 ? null : "hidden"}`}>
                     <Popover placement="bottom-start">
                         <PopoverHandler>
