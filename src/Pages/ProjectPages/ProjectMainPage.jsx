@@ -1,5 +1,5 @@
 import { Typography, Button, Card } from "@material-tailwind/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
 import IncomingEvent from "../../ProjectComponents/IncomingEvents";
 import ProjectHeader from "../../Components/ProjectHeader";
@@ -20,7 +20,9 @@ export default function ProjectMainPage() {
         createdAt: "2023-10-26 15:16:40.942694+02",
         isPrivate: false,
     });
-
+    useEffect(()=>{
+        
+    },[])
     return (
         <div className="grid w-full h-full grid-cols-1 lg:grid-cols-4 gap-5 p-5 bg-gray-300 lg:grid-rows-4 grid-rows ">
             <ProjectHeader></ProjectHeader>

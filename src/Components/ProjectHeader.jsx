@@ -4,9 +4,6 @@ import { useAuth } from "../auth";
 import { useState,useEffect } from "react";
 import RequestHandler from "../Miscs/RequestHandler";
 export default function ProjectHeader() {
-
-
-
     const [userData, setUserData] = useState({});
     const [userPic,setUserPic] = useState();
     const auth = useAuth();

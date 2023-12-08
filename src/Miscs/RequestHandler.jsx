@@ -34,7 +34,20 @@ const RequestHandler = {
       throw error;
     }
   },
+  put: async (endpoint, data, token) => {
+    try {
+      const response = await axios.put(`${BASE_URL}${endpoint}`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
+      return response.data;
+    } catch (error) {
+      handleRequestError(error);
+      throw error;
+    }
+  },
   // Dodaj inne metody, takie jak put, delete, itp., w razie potrzeby
 };
 
