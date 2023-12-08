@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
-import { Typography, CardBody, Avatar, Badge, Button, Popover, PopoverHandler, PopoverContent } from "@material-tailwind/react";
+import { Typography, CardBody, Spinner, Avatar, Badge, Button, Popover, PopoverHandler, PopoverContent } from "@material-tailwind/react";
 import { Card } from "@material-tailwind/react";
 import ClockCard from "../Components/ClockCard";
 import { FaCalendarAlt } from "react-icons/fa";
@@ -14,12 +14,16 @@ import { useAuth } from "../auth";
 import { useNavigate } from "react-router-dom";
 export default function HomePage() {
     const auth = useAuth();
-    
-    useEffect(()=>{
-        
-        console.log(auth.getUser())
-
-    },[])
+    const [user, setUser] = useState()
+    //  const [loading, isLoading] = useState(true)
+    const getUser = async () => {
+        const u = await auth.getUser()
+        setUser(u)
+        // isLoading(false)
+    }
+    useEffect(() => {
+        getUser()
+    }, [])
     const [userProjects, setUserProjects] = useState([{
         uuid: "123-321-123",
         title: "Project-Manager",
@@ -45,6 +49,7 @@ export default function HomePage() {
         isPrivate: true,
     }]);
     const navigate = useNavigate();
+
     return (
         <div className="grid w-full h-full grid-cols-1 lg:grid-cols-5 gap-5 p-5 bg-gray-300 lg:grid-rows-8 grid-rows ">
             <MainPageHeader></MainPageHeader>
@@ -64,7 +69,7 @@ export default function HomePage() {
                         <MdPushPin className="w-6 h-6" />
                         <Typography variant="h6">Przypięty projekt</Typography>
                     </div>
-                    <ProjectOverwiev projectUuid={auth.getUser().pinnedProjectUuid}/>
+                    {user? <ProjectOverwiev projectUuid={ user.pinnedProjectUuid} />:null}
                 </CardBody>
             </Card>
             <Card className="col-span-full lg:col-span-2 row-span-4">
@@ -89,14 +94,14 @@ export default function HomePage() {
                                 </div>
                             </Fragment>
                         ))}
-                        <button className="flex flex-grow w-full hover:bg-gray-100 flex-row space-x-4 place-content-center items-center justify-center py-2" onClick={()=>navigate('/projects')}>
+                        <button className="flex flex-grow w-full hover:bg-gray-100 flex-row space-x-4 place-content-center items-center justify-center py-2" onClick={() => navigate('/projects')}>
                             <FaEllipsisH className="w-6 h-6" />
                             <Typography variant="h6">Wszystkie projekty</Typography>
                         </button>
                     </div>
                 </CardBody>
             </Card>
-        
+
         </div>
     )
 }

@@ -1,34 +1,58 @@
 import { useEffect, useState } from "react";
 import { AiOutlineSnippets } from "react-icons/ai";
-import { Avatar, Typography } from "@material-tailwind/react";
+import { Avatar, Spinner, Typography } from "@material-tailwind/react";
 import { FaArrowRight,FaRegEyeSlash  } from "react-icons/fa";
 import { FaEarthAfrica } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import RequestHandler from "../Miscs/RequestHandler";
 import { useAuth } from "../auth";
-export default function ProjectOverview(projectUuid) {
+export default function ProjectOverview({projectUuid}) {
     const auth = useAuth();
-    const [projectData, setProjectData] = useState({
-        uuid: "123-321-123",
-        title: "Project-Manager",
-        description: "System do zarządzania projektami studenckimi",
-        status: "STARTED",
-        createdAt: "2023-10-26 15:16:40.942694+02",
-        isPrivate: false,
-    });
-    useEffect(()=>{
+    const [loading, isLoading] = useState(true)
+    const [projectMembers,setProjectMembers] = useState([])
+    const [projectData, setProjectData] = useState(
+    //     {
+    //     uuid: "123-321-123",
+    //     title: "Project-Manager",
+    //     description: "System do zarządzania projektami studenckimi",
+    //     status: "STARTED",
+    //     createdAt: "2023-10-26 15:16:40.942694+02",
+    //     isPrivate: false,
+    // }
+    );
+    const fetchPics = async (members) =>{
+        
+        members.forEach( async member => {
+            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.userUuid}`,auth.getToken())
+            console.log(pic)
+            setProjectMembers([...projectMembers,pic])
+        });
+    }
+    const fetchProject = async () =>{
+        if(projectUuid)
+        {
+            console.log("juhu")
 
-        const fetchProject = async () =>{
             const data = await RequestHandler.get(`/api/projects/${projectUuid}`,auth.getToken())
-            setProjectData(projectData)
-        }
+            console.log(data)
+        setProjectData(data)
+        const members = await RequestHandler.get(`/api/projects/${projectUuid}/getProjectMembers`,auth.getToken())
+        await fetchPics(members)
 
-        if(projectUuid){
-            fetchProject().catch(console.error)
+        
+        isLoading(false)
         }
-    },[projectUuid])
-    const avatarUrl = "https://i.pravatar.cc/300";
-
+        
+    }
+    useEffect(()=>{
+        console.log(projectUuid)
+       fetchProject().catch(console.error)
+        
+    },[])
+    if(loading)
+        return(
+            <Spinner color="amber" className="m-auto"></Spinner>
+            )
     return (
         <div className="flex flex-row w-full h-full p-3 border border-gray-400 rounded-xl bg-gray-300 items-center justify-center">
             <section className="flex basis-1/2">
@@ -41,13 +65,11 @@ export default function ProjectOverview(projectUuid) {
                     </div>
                     <div className="flex flex-row">
                         <div className="flex">
-                            {Array.from({ length: 5 }, (_, index) => (
-                                <Avatar
-                                    key={index}
-                                    src={avatarUrl}
-                                   className="bg-cover bg-center rounded-full border-2 border-black -ml-2 relative z-10"
-                                ></Avatar>
-                            ))}
+                            {projectMembers?.map((pic,index)=>{
+                                return(
+                                    <Avatar key={index} src={`data:image/jpeg;base64,${pic}`} className={`bg-cover bg-center rounded-full border-2 border-black ${projectMembers.length>1 ? "-ml-2" : null } relative z-10`}></Avatar>
+                                )
+                            })}          
                         </div>
                     </div>
                 </div>

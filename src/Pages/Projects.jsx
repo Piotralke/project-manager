@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BsStack } from "react-icons/bs";
 import ProjectOverview from "../Components/ProjectOverwiev";
 import { Dialog, Button, Typography, Card, DialogBody, DialogHeader, DialogFooter, Input, Textarea, Checkbox } from "@material-tailwind/react";
@@ -11,6 +11,7 @@ export default function Projects() {
     const [title, setTitle] = useState();
     const [desc, setDesc] = useState();
     const [isPrivate, setIsPrivate] = useState(false);
+    const [projects, setProjects] = useState();
     const auth = useAuth()
     const handleTitleChange = (value) => {
         setTitle(value);
@@ -30,7 +31,7 @@ export default function Projects() {
     };
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const user= await auth.getUser()
+        const user = await auth.getUser()
         const payload = {
             title: title,
             description: desc,
@@ -38,34 +39,34 @@ export default function Projects() {
             members: [],    //dorobienie listy członków
             isPrivate: isPrivate
         }
-        const response = await RequestHandler.post("/api/projects",auth.getToken(),payload)
+        const response = await RequestHandler.post("/api/projects", auth.getToken(), payload)
         console.log(response)
     }
+
+    const fetchProjects = async () => {
+        const user = await auth.getUser()
+        const response = await RequestHandler.get(`/api/projects/get-for-user/${user.uuid}`, auth.getToken())
+        console.log(response)
+        setProjects(response);
+    }
+    useEffect(() => {
+        fetchProjects().catch(console.error)
+    }, [])
+
+
     return (
         <div className="grid w-full h-full grid-cols-1 lg:grid-cols-4 gap-5 p-5 bg-gray-300 lg:grid-rows-8 grid-rows ">
             <MainPageHeader></MainPageHeader>
             <div className="col-span-full">
                 <Button color="amber" onClick={handleCreateProject}>Utwórz nowy projekt</Button>
             </div>
-            <Card className="col-span-2 row-span-2">
-                <ProjectOverview></ProjectOverview>
-            </Card>
-            <Card className="col-span-2 row-span-2">
-                <ProjectOverview></ProjectOverview>
-            </Card>
-            <Card className="col-span-2 row-span-2">
-                <ProjectOverview></ProjectOverview>
-            </Card>
-            <Card className="col-span-2 row-span-2">
-                <ProjectOverview></ProjectOverview>
-            </Card>
-            <Card className="col-span-2 row-span-2">
-                <ProjectOverview></ProjectOverview>
-            </Card>
-            <Card className="col-span-2 row-span-2">
-                <ProjectOverview></ProjectOverview>
-            </Card>
-
+            {projects?.map((project, index) => {
+                return (
+                    <Card key={index} className="col-span-2 row-span-2">
+                        <ProjectOverview projectUuid={project.uuid}></ProjectOverview>
+                    </Card>
+                )
+            })}
             {/* Dialog do utworzenia nowego projektu */}
             <Dialog open={openDialog} onClose={handleCloseDialog} size="md">
                 <form onSubmit={handleSubmit}>

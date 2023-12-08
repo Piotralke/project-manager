@@ -12,10 +12,8 @@ export default function MainPageHeader() {
     useEffect(() => {
         const fetchUser = async () => {
             const user = await auth.getUser()
-            console.log(user)
             setUserData(user)
             const profilePic = await RequestHandler.get(`/api/users/profile-picture?userId=${user.uuid}`,auth.getToken())
-            console.log(profilePic)
             setUserPic(profilePic)
             }
         
