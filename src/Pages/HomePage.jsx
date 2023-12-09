@@ -23,7 +23,7 @@ export default function HomePage() {
         const projects = await RequestHandler.get(`/api/projects/get-for-user/${u.uuid}`,auth.getToken())
         let topItems = projects.slice(0,4)
        setUserProjects(topItems)
-        isLoading(false)
+      //  isLoading(false)
     }
     const getProjects = async () => {
         
@@ -36,10 +36,10 @@ export default function HomePage() {
     const navigate = useNavigate();
 
     return (
-        <div className="grid w-full h-full grid-cols-1 lg:grid-cols-5 gap-5 p-5 bg-gray-300 lg:grid-rows-8 grid-rows ">
+        <div className="grid w-full h-full grid-cols-1 gap-5 p-5 bg-gray-300 lg:grid-cols-5 lg:grid-rows-8 grid-rows ">
             <MainPageHeader></MainPageHeader>
             <Card className="col-span-full lg:col-span-3 row-span-7">
-                <div className="flex flex-row space-x-4 place-content-center py-2">
+                <div className="flex flex-row py-2 space-x-4 place-content-center">
                     <FaCalendarAlt className="w-8 h-full" />
                     <Typography variant="h2">Kalendarz</Typography>
                 </div>
@@ -48,29 +48,29 @@ export default function HomePage() {
                 </CardBody>
             </Card>
             <ClockCard className="col-span-full lg:col-span-2"></ClockCard>
-            <Card className="col-span-full lg:col-span-2 row-span-2">
-                <CardBody className="flex flex-col p-2 w-full h-full">
-                    <div className="flex flex-row space-x-4 place-content-center py-2">
+            <Card className="row-span-2 col-span-full lg:col-span-2">
+                <CardBody className="flex flex-col w-full h-full p-2">
+                    <div className="flex flex-row py-2 space-x-4 place-content-center">
                         <MdPushPin className="w-6 h-6" />
                         <Typography variant="h6">Przypięty projekt</Typography>
                     </div>
                     {user? <ProjectOverwiev projectUuid={ user.pinnedProjectUuid} />:null}
                 </CardBody>
             </Card>
-            <Card className="col-span-full lg:col-span-2 row-span-4">
+            <Card className="row-span-4 col-span-full lg:col-span-2">
                 <CardBody>
-                    <div className="flex flex-row space-x-4 place-content-center py-2">
+                    <div className="flex flex-row py-2 space-x-4 place-content-center">
                         <BsStack className="w-6 h-6" />
                         <Typography variant="h6">Projekty</Typography>
                     </div>
                     {userProjects.length>0? 
-                    <div className="border border-gray-400 rounded-xl w-full overflow-hidden divide-y divide-gray-400 my-4">
+                    <div className="w-full my-4 overflow-hidden border border-gray-400 divide-y divide-gray-400 rounded-xl">
                     { userProjects.map((project, index) => (
                         <Fragment key={index}>
                             <div
                                 className={`p-4 flex flex-row space-x-2 odd:bg-gray-200 `}
                             >
-                                <Typography variant="h5" className="font-bold mb-2 basis-5/12">
+                                <Typography variant="h5" className="mb-2 font-bold basis-5/12">
                                     {project.title}
                                 </Typography>
                                 <Typography variant="p" className="basis-1/2">{project.description}</Typography>
@@ -80,13 +80,13 @@ export default function HomePage() {
                             </div>
                         </Fragment>
                     ))}
-                    <button className="flex flex-grow w-full hover:bg-gray-100 flex-row space-x-4 place-content-center items-center justify-center py-2" onClick={() => navigate('/projects')}>
+                    <button className="flex flex-row items-center justify-center flex-grow w-full py-2 space-x-4 hover:bg-gray-100 place-content-center" onClick={() => navigate('/projects')}>
                         <FaEllipsisH className="w-6 h-6" />
                         <Typography variant="h6">Wszystkie projekty</Typography>
                     </button>
                 </div>
                     : 
-                    <button className="border border-gray-400 rounded-xl flex flex-grow w-full hover:bg-gray-100 flex-row space-x-4 place-content-center items-center justify-center py-2" onClick={() => navigate('/projects')}>
+                    <button className="flex flex-row items-center justify-center flex-grow w-full py-2 space-x-4 border border-gray-400 rounded-xl hover:bg-gray-100 place-content-center" onClick={() => navigate('/projects')}>
                         <Typography variant="h6">Brak projektów, przejdź tutaj aby dodać projekt</Typography>
                     </button>
                     }

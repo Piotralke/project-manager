@@ -37,23 +37,31 @@ export default function ProjectOverview({ projectUuid }) {
             setProjectData(data)
             const members = await RequestHandler.get(`/api/projects/${projectUuid}/getProjectMembers`, auth.getToken())
             await fetchPics(members)
-
-
-            isLoading(false)
+  
         }
-
+        
     }
     useEffect(() => {
         console.log(projectUuid)
         fetchProject().catch(console.error)
-
+        isLoading(false)
     }, [])
     if (loading)
         return (
             <Spinner color="amber" className="m-auto"></Spinner>
         )
+    if(!projectData)
+    {
+        return (
+            <div className="flex items-center justify-center w-full h-full ">
+
+                <Typography variant="h5">Brak przypiętego projektu.</Typography>
+            </div>
+        )
+    }
+    else
     return (
-        <div className="flex flex-row w-full h-full p-3 border border-gray-400 rounded-xl bg-gray-300 items-center justify-center">
+        <div className="flex flex-row items-center justify-center w-full h-full p-3 bg-gray-300 border border-gray-400 rounded-xl">
             <section className="flex basis-1/2">
                 <div className="flex flex-col">
                     <div className="flex flex-row mb-2">
@@ -83,8 +91,8 @@ export default function ProjectOverview({ projectUuid }) {
                                     const additionalUsersCount = projectMembers.length - maxUsersToShow;
                                     return (
                                         <div key={index} className="relative z-10">
-                                            <Avatar src={`data:image/jpeg;base64,${pic}`} className="bg-cover bg-center rounded-full border-2 border-black"></Avatar>
-                                            <span className="absolute bottom-0 right-0 bg-white text-black rounded-full p-1 -mr-1">
+                                            <Avatar src={`data:image/jpeg;base64,${pic}`} className="bg-center bg-cover border-2 border-black rounded-full"></Avatar>
+                                            <span className="absolute bottom-0 right-0 p-1 -mr-1 text-black bg-white rounded-full">
                                                 {`+${additionalUsersCount}`}
                                             </span>
                                         </div>
@@ -113,7 +121,7 @@ export default function ProjectOverview({ projectUuid }) {
                     }
                 </div>
             </section>
-            <section className="flex basis-1/12 justify-center items-center h-full">
+            <section className="flex items-center justify-center h-full basis-1/12">
                 <Link to={`/projects/${projectData.uuid}`}>
                     <FaArrowRight className="w-10 h-10 m-atuo"></FaArrowRight>
                 </Link>
