@@ -48,7 +48,7 @@ const RequestHandler = {
       throw error;
     }
   },
-  // Dodaj inne metody, takie jak put, delete, itp., w razie potrzeby
+  
 };
 
 const handleRequestError = (error) => {

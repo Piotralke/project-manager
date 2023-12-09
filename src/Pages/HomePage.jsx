@@ -12,42 +12,27 @@ import ProjectOverwiev from "../Components/ProjectOverwiev";
 import MainPageHeader from "../Components/MainPageHeader";
 import { useAuth } from "../auth";
 import { useNavigate } from "react-router-dom";
+import RequestHandler from "../Miscs/RequestHandler";
 export default function HomePage() {
     const auth = useAuth();
     const [user, setUser] = useState()
     //  const [loading, isLoading] = useState(true)
-    const getUser = async () => {
+    const fetchData = async () => {
         const u = await auth.getUser()
         setUser(u)
-        // isLoading(false)
+        const projects = await RequestHandler.get(`/api/projects/get-for-user/${u.uuid}`,auth.getToken())
+        let topItems = projects.slice(0,4)
+       setUserProjects(topItems)
+        isLoading(false)
+    }
+    const getProjects = async () => {
+        
     }
     useEffect(() => {
-        getUser()
+        fetchData()
+         
     }, [])
-    const [userProjects, setUserProjects] = useState([{
-        uuid: "123-321-123",
-        title: "Project-Manager",
-        description: "System do zarządzania projektami studenckimi",
-        status: "STARTED",
-        createdAt: "2023-10-26 15:16:40.942694+02",
-        isPrivate: false,
-    },
-    {
-        uuid: "123-321-123",
-        title: "Project-Manager2",
-        description: "System do zarządzania projektami studenckimi huhu hehe",
-        status: "STARTED",
-        createdAt: "2023-10-26 15:16:40.942694+02",
-        isPrivate: true,
-    },
-    {
-        uuid: "123-321-123",
-        title: "Project-Manager3",
-        description: "System do zarządzania projektami studenckimi huhu hehe",
-        status: "STARTED",
-        createdAt: "2023-10-26 15:16:40.942694+02",
-        isPrivate: true,
-    }]);
+    const [userProjects, setUserProjects] = useState([]);
     const navigate = useNavigate();
 
     return (
@@ -78,27 +63,34 @@ export default function HomePage() {
                         <BsStack className="w-6 h-6" />
                         <Typography variant="h6">Projekty</Typography>
                     </div>
+                    {userProjects.length>0? 
                     <div className="border border-gray-400 rounded-xl w-full overflow-hidden divide-y divide-gray-400 my-4">
-                        {userProjects.map((project, index) => (
-                            <Fragment key={index}>
-                                <div
-                                    className={`p-4 flex flex-row space-x-2 odd:bg-gray-200 `}
-                                >
-                                    <Typography variant="h5" className="font-bold mb-2 basis-5/12">
-                                        {project.title}
-                                    </Typography>
-                                    <Typography variant="p" className="basis-1/2">{project.description}</Typography>
-                                    <div className="flex items-center justify-end m-auto basis-1/12">
-                                        <FaArrowRight className="w-6 h-6" />
-                                    </div>
-                                </div>
-                            </Fragment>
-                        ))}
-                        <button className="flex flex-grow w-full hover:bg-gray-100 flex-row space-x-4 place-content-center items-center justify-center py-2" onClick={() => navigate('/projects')}>
-                            <FaEllipsisH className="w-6 h-6" />
-                            <Typography variant="h6">Wszystkie projekty</Typography>
-                        </button>
-                    </div>
+                    { userProjects.map((project, index) => (
+                        <Fragment key={index}>
+                            <div
+                                className={`p-4 flex flex-row space-x-2 odd:bg-gray-200 `}
+                            >
+                                <Typography variant="h5" className="font-bold mb-2 basis-5/12">
+                                    {project.title}
+                                </Typography>
+                                <Typography variant="p" className="basis-1/2">{project.description}</Typography>
+                                <button onClick={()=>navigate(`/projects/${project.uuid}`)} className="flex items-center justify-end m-auto basis-1/12">
+                                    <FaArrowRight className="w-6 h-6" />
+                                </button>
+                            </div>
+                        </Fragment>
+                    ))}
+                    <button className="flex flex-grow w-full hover:bg-gray-100 flex-row space-x-4 place-content-center items-center justify-center py-2" onClick={() => navigate('/projects')}>
+                        <FaEllipsisH className="w-6 h-6" />
+                        <Typography variant="h6">Wszystkie projekty</Typography>
+                    </button>
+                </div>
+                    : 
+                    <button className="border border-gray-400 rounded-xl flex flex-grow w-full hover:bg-gray-100 flex-row space-x-4 place-content-center items-center justify-center py-2" onClick={() => navigate('/projects')}>
+                        <Typography variant="h6">Brak projektów, przejdź tutaj aby dodać projekt</Typography>
+                    </button>
+                    }
+                    
                 </CardBody>
             </Card>
 

@@ -114,7 +114,7 @@ const Calendar = () => {
                 return (
                   <div
                     key={dayIndex}
-                    className={`text-center px-1 ${!isCurrentMonth ? 'text-gray-400 ' : ''} ${isToday && isCurrentMonth ? 'bg-blue-200 cursor-pointer ' : ''
+                    className={`text-center px-1 ${!isCurrentMonth ? 'text-gray-400 ' : ''} ${isToday && isCurrentMonth ? 'border border-red-400 rounded-md cursor-pointer ' : ''
                       } ${isTaskDay ? 'bg-yellow-200 cursor-pointer' : 'cursor-pointer'}`}
                     onClick={() => handleDayClick(currentDate)}
                   >
@@ -152,7 +152,7 @@ const Calendar = () => {
                     return (
                       <div
                         key={dayIndex}
-                        className={`text-center px-1 ${!isCurrentMonth ? 'text-gray-400 ' : ''} ${isToday && isCurrentMonth ? 'bg-blue-200 cursor-pointer ' : ''
+                        className={`text-center px-1 ${!isCurrentMonth ? 'text-gray-400 ' : ''} ${isToday && isCurrentMonth ? 'border border-red-400 rounded-md  cursor-pointer ' : ''
                           } ${isTaskDay ? 'bg-yellow-200 cursor-pointer' : 'cursor-pointer'}`}
                         onClick={() => handleDayClick(currentDate)}
                       >
