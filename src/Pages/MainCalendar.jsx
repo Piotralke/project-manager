@@ -41,7 +41,17 @@ export default function MainCalendar() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const data = {
+      title: title,
+      description: desc,
+      dueTo: startDate,
+      startTime: null,
+      type: 0,
+      projectUuid: selectedProject
+    }
+    console.log(data)
+    const response = await RequestHandler.post(`/api/projects/AddProjectEvent`,auth.getToken(),data)
+    console.log(response);
     
   };
   const handleTitleChange = (value) => {
