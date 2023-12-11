@@ -1,9 +1,19 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ProjectHeader from "../../Components/ProjectHeader"
 import { Button, Card, CardBody, CardHeader, Checkbox, Typography } from "@material-tailwind/react"
 import TaskList from "../../ProjectComponents/TaskList"
+import { useParams } from "react-router-dom"
+import { useAuth } from "../../auth"
+import RequestHandler from "../../Miscs/RequestHandler"
 export default function ProjectTasksPage() {
-
+  const {projectId} = useParams()
+  const auth = useAuth();
+  const fetchData = async () =>{
+    const tasks = await RequestHandler.get(`/api/projects/`)
+  }
+  useEffect(()=>{
+    
+  },[])
     const [projectTasks,setProjectTasks] = useState(
         [{
             uuid: "123-321-123",
