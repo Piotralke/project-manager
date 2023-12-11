@@ -26,6 +26,7 @@ export default function MainCalendar() {
   const [selectedProject, setSelectedProject] = useState();
   const [userProjects, setUserProjects] = useState([]);
   const [startDate, setStartDate] = useState();
+  const [projectMembers,setProjectMembers]= useState();
   const auth = useAuth();
   const handleTaskDialogClose = () => {
     isTaskDialogOpen(false);
@@ -68,6 +69,14 @@ export default function MainCalendar() {
     );
     setUserProjects(projects);
   };
+  const fetchProjectMembers = async () =>{
+    
+    const members = await RequestHandler.get(`/api/projects/${selectedProject}/GetProjectMembers`,auth.getToken()) // tu są same id
+    console.log(members)
+  }
+  useEffect(()=>{
+    fetchProjectMembers()
+  },[selectedProject])
   useEffect(() => {
 
     fetchData()

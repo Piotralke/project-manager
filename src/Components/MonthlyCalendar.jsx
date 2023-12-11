@@ -65,10 +65,8 @@ const MonthlyCalendar = () => {
     setSelectedDay(day);
   };
   const contentForDay = (eventForDay, tasksForDay) => {
-    console.log(eventForDay)
-    console.log(tasksForDay)
     return (
-      <div className='flex flex-row divide-x-2 space-x-2 divide-gray-300'>
+      <div className='flex flex-row space-x-2 divide-x-2 divide-gray-300'>
         {eventForDay?.length > 0 ? <div className='flex flex-col p-2'>
           <Typography className="font-bold" variant="paragraph">Wydarzenia:</Typography>
           {eventForDay?.map((event, index_e) => {
@@ -106,7 +104,7 @@ const MonthlyCalendar = () => {
 
     return (
       <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center justify-between mb-4">
           <Button color="amber" onClick={() => changeMonth(-1)}>
             Poprzedni
           </Button>
@@ -118,13 +116,13 @@ const MonthlyCalendar = () => {
         <div className="grid grid-cols-8 ">
           <div className="col-span-1"></div>
           {daysOfWeek.map((dayOfWeek, index) => (
-            <div key={`dayOfWeek-${index}`} className="text-center font-bold">
+            <div key={`dayOfWeek-${index}`} className="font-bold text-center">
               {dayOfWeek}
             </div>
           ))}
           {weeks.map((week, index) => (
             <React.Fragment key={`week-${index}`}>
-              <div className="col-span-1 text-right font-bold p-11 ">
+              <div className="col-span-1 font-bold text-right p-11 ">
                 {week.weekNumber}
               </div>
               {week.daysInWeek.map((day, dayIndex) => {
