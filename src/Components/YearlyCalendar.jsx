@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { CardHeader, Typography } from "@material-tailwind/react";
-
+import { CardHeader, Tooltip, Typography } from "@material-tailwind/react";
+import { isSameDay, isWithinInterval } from 'date-fns';
+import { useAuth } from '../auth';
+import RequestHandler from '../Miscs/RequestHandler';
 const Calendar = () => {
   const getDaysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
-
+  const auth = useAuth()
   const generateMonthDays = (year, month) => {
     const firstDay = new Date(year, month, 1);
     const firstDayOfWeek = (firstDay.getDay() + 6) % 7;
@@ -30,11 +32,10 @@ const Calendar = () => {
     return [...prevMonthDays, ...currentMonthDays];
   };
 
-  const [tasks, setTasks] = useState([
-    { startDate: new Date(2023, 10, 5), endDate: new Date(2023, 10, 10) },
-    // Dodaj inne wydarzenia tutaj
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [events, setEvents] = useState([
 
+  ]);
   const today = new Date();
 
   const handleDayClick = (date) => {
@@ -54,13 +55,24 @@ const Calendar = () => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 768);
     };
-
+    fetchData()
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+  const fetchData = async () => {
+    const user = await auth.getUser()
+    const request = `/api/user-events/get-events-for-user/${user.uuid}`;
+    const response = await RequestHandler.get(request, auth.getToken());
+    const taskEvents = response.filter(event => event.type === 0);
+    const regularEvents = response.filter(event => event.type === 1);
+    console.log(taskEvents)
+    console.log(regularEvents)
+    setTasks(taskEvents);
+    setEvents(regularEvents);
+  }
 
   const handlePrevMonth = () => {
     setCurrentVisibleMonth((prev) => {
@@ -86,7 +98,30 @@ const Calendar = () => {
   const handleNextYear = () => {
     setCurrentVisibleYear((prev) => prev + 1);
   };
+  const contentForDay = (eventForDay, tasksForDay) => {
+    return (
+      <div className='flex flex-row space-x-2 divide-x-2 divide-gray-300'>
+        {eventForDay?.length > 0 ? <div className='flex flex-col p-2'>
+          <Typography className="font-bold" variant="paragraph">Wydarzenia:</Typography>
+          {eventForDay?.map((event, index_e) => {
+            return (
+              <Typography key={index_e} >{event.title}</Typography>
+            )
+          })}
+        </div> : null}
+        {tasksForDay?.length > 0 ? <div className='flex flex-col p-2'>
+          <Typography className="font-bold" variant="paragraph">Zadania:</Typography>
+          {tasksForDay?.map((task, index_t) => {
+            return (
+              <Typography key={index_t} >{task.title}</Typography>
+            )
+          })}
+        </div> : null}
 
+
+      </div>
+    )
+  }
   const generateCalendar = () => {
     const yearMonths = Array.from({ length: 12 }, (_, monthIndex) => {
       return generateMonthDays(currentVisibleYear, monthIndex);
@@ -107,19 +142,39 @@ const Calendar = () => {
                 <div key={dayIndex} className="font-semibold text-center">{dayName}</div>
               ))}
               {currentMonth.map(({ day, isCurrentMonth }, dayIndex) => {
-                const currentDate = new Date(currentVisibleYear, currentVisibleMonth < firstDayOfWeek ? currentVisibleMonth + 1 : currentVisibleMonth, day);
+                const currentDate = new Date(currentVisibleYear, monthIndex < firstDayOfWeek ? monthIndex + 1 : monthIndex, day);
                 const isToday = currentDate.toDateString() === today.toDateString();
-                const isTaskDay = tasks.some(task => currentDate >= task.startDate && currentDate <= task.endDate);
-
+                const tasksForDay = tasks.filter(task => isSameDay(currentDate, new Date(task.dueTo)));
+                const eventForDay = events.filter(event => {
+                  const startDay = new Date(event.startTime);
+                  startDay.setHours(0, 0, 0, 0);
+                  const endDay = new Date(event.dueTo);
+                  endDay.setHours(23, 59, 59, 99);
+                  return isWithinInterval(currentDate, { start: startDay, end: endDay });
+                });
+                if (tasksForDay.length > 0) {
+                  console.log(tasksForDay)
+                }
+                if (eventForDay.length > 0) {
+                  console.log(eventForDay)
+                }
                 return (
-                  <div
-                    key={dayIndex}
-                    className={`text-center px-1 ${!isCurrentMonth ? 'text-gray-400 ' : ''} ${isToday && isCurrentMonth ? 'border border-red-400 rounded-md cursor-pointer ' : ''
-                      } ${isTaskDay ? 'bg-yellow-200 cursor-pointer' : 'cursor-pointer'}`}
-                    onClick={() => handleDayClick(currentDate)}
-                  >
-                    {day}
-                  </div>
+                  <Tooltip className={`${eventForDay?.length > 0 || tasksForDay?.length > 0 ? "" : "hidden"}`} content={contentForDay(eventForDay, tasksForDay)}>
+                    <div
+                      key={dayIndex}
+                      className={`hover:cursor-pointer text-center px-1 ${!isCurrentMonth ? 'text-gray-400 ' : ''} ${isToday && isCurrentMonth ? 'border border-red-400 rounded-md cursor-pointer ' : ''
+                        } `}
+                      onClick={() => handleDayClick(currentDate)}
+                      style={{
+                        background: eventForDay.length > 0 && tasksForDay.length > 0
+                          ? 'linear-gradient(#3490dc, #38a169)'
+                          : eventForDay.length > 0 ? '#3490dc' : tasksForDay.length > 0 ? '#38a169' : 'transparent',
+                      }}
+                    >
+                      {day}
+                    </div>
+                  </Tooltip>
+
                 );
               })}
             </div>
@@ -147,18 +202,33 @@ const Calendar = () => {
                   {monthDays.map(({ day, isCurrentMonth }, dayIndex) => {
                     const currentDate = new Date(currentVisibleYear, monthIndex < firstDayOfWeek ? monthIndex + 1 : monthIndex, day);
                     const isToday = currentDate.toDateString() === today.toDateString();
-                    const isTaskDay = tasks.some(task => currentDate >= task.startDate && currentDate <= task.endDate);
-
+                    const tasksForDay = tasks.filter(task => isSameDay(currentDate, new Date(task.dueTo)));
+                    const eventForDay = events.filter(event => {
+                      const startDay = new Date(event.startTime);
+                      startDay.setHours(0, 0, 0, 0);
+                      const endDay = new Date(event.dueTo);
+                      endDay.setHours(23, 59, 59, 99);
+                      return isWithinInterval(currentDate, { start: startDay, end: endDay });
+                    });
                     return (
-                      <div
-                        key={dayIndex}
-                        className={`text-center px-1 ${!isCurrentMonth ? 'text-gray-400 ' : ''} ${isToday && isCurrentMonth ? 'border border-red-400 rounded-md  cursor-pointer ' : ''
-                          } ${isTaskDay ? 'bg-yellow-200 cursor-pointer' : 'cursor-pointer'}`}
-                        onClick={() => handleDayClick(currentDate)}
-                      >
-                        {day}
-                      </div>
+                      <Tooltip className={`${eventForDay?.length > 0 || tasksForDay?.length > 0 ? "" : "hidden"}`} content={contentForDay(eventForDay, tasksForDay)}>
+                        <div
+                          key={dayIndex}
+                          className={`hover:cursor-pointer text-center px-1 ${!isCurrentMonth ? 'text-gray-400 ' : ''} ${isToday && isCurrentMonth ? 'border border-red-400 rounded-md cursor-pointer ' : ''
+                            } `}
+                          onClick={() => handleDayClick(currentDate)}
+                          style={{
+                            background: eventForDay.length > 0 && tasksForDay.length > 0
+                              ? 'linear-gradient(#3490dc, #38a169)'
+                              : eventForDay.length > 0 ? '#3490dc' : tasksForDay.length > 0 ? '#38a169' : 'transparent',
+                          }}
+                        >
+                          {day}
+                        </div>
+                      </Tooltip>
+
                     );
+
                   })}
                 </div>
               </div>

@@ -25,9 +25,7 @@ export default function HomePage() {
        setUserProjects(topItems)
       //  isLoading(false)
     }
-    const getProjects = async () => {
-        
-    }
+  
     useEffect(() => {
         fetchData()
          
@@ -73,7 +71,7 @@ export default function HomePage() {
                                 <Typography variant="h5" className="mb-2 font-bold basis-5/12">
                                     {project.title}
                                 </Typography>
-                                <Typography variant="p" className="basis-1/2">{project.description}</Typography>
+                                <Typography variant="paragraph" className="basis-1/2">{project.description}</Typography>
                                 <button onClick={()=>navigate(`/projects/${project.uuid}`)} className="flex items-center justify-end m-auto basis-1/12">
                                     <FaArrowRight className="w-6 h-6" />
                                 </button>
