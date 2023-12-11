@@ -23,7 +23,7 @@ export default function ProjectOverview({ projectUuid }) {
     const fetchPics = async (members) => {
 
         members.forEach(async member => {
-            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.userUuid}`, auth.getToken())
+            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken())
             console.log(pic)
             setProjectMembers([...projectMembers, pic])
         });

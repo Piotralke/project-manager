@@ -11,11 +11,10 @@ export default function ProjectMembers() {
     const fetchPics = async (members) => {
 
         members.forEach(async member => {
-            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.userUuid}`, auth.getToken())
+            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken())
             console.log(pic)
-            const user = await RequestHandler.get(`/api/users/${member.userUuid}`,auth.getToken())
             
-            setProjectMembers([...projectMembers, {...user, pic}])
+            setProjectMembers([...projectMembers, {...member, pic}])
         });
     }
     const fetchData = async () =>{
@@ -33,14 +32,14 @@ export default function ProjectMembers() {
             <div >
                 {projectMembers.map((member,index)=>{
                     return(
-                        <div className="even:bg-gray-300 p-2 rounded-xl space-x-2 flex flex-row items-center" key={index}>
+                        <div className="flex flex-row items-center p-2 space-x-2 even:bg-gray-300 rounded-xl" key={index}>
                             <Avatar src={`data:image/jpeg;base64,${member.pic}`}></Avatar>
                             <Typography variant="paragraph" className="font-bold">{member.name} {member.surname}</Typography>
                         </div>
                     )
                 })}
             </div>
-            <Button color="amber" className="w-1/2 ml-auto mt-auto">Dodaj członka</Button>
+            <Button color="amber" className="w-1/2 mt-auto ml-auto">Dodaj członka</Button>
         </div>
     )
 }
