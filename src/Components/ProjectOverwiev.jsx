@@ -21,12 +21,14 @@ export default function ProjectOverview({ projectUuid }) {
         // }
     );
     const fetchPics = async (members) => {
-
-        members.forEach(async member => {
-            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken())
-            console.log(pic)
-            setProjectMembers([...projectMembers, pic])
-        });
+        const promises = members.map(async (member) => {
+            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken());
+            return pic;
+          });
+        
+          const profilePictures = await Promise.all(promises);
+        
+          setProjectMembers([...projectMembers, ...profilePictures]);
     }
     const fetchProject = async () => {
         if (projectUuid) {
@@ -36,6 +38,7 @@ export default function ProjectOverview({ projectUuid }) {
             console.log(data)
             setProjectData(data)
             const members = await RequestHandler.get(`/api/projects/${projectUuid}/getProjectMembers`, auth.getToken())
+            console.log(members)
             await fetchPics(members)
   
         }
@@ -75,7 +78,6 @@ export default function ProjectOverview({ projectUuid }) {
                             {projectMembers?.map((pic, index) => {
                                 // Ustaw maksymalną liczbę użytkowników do wyświetlenia
                                 const maxUsersToShow = 5;
-
                                 // Sprawdź, czy liczba użytkowników przekracza maksymalną ilość
                                 if (index < maxUsersToShow) {
                                     // Renderuj avatary dla pierwszych 5 użytkowników
@@ -86,13 +88,13 @@ export default function ProjectOverview({ projectUuid }) {
                                             className={`bg-cover bg-center rounded-full border-2 border-black ${index > 0 ? "-ml-2" : ""} relative z-10`}
                                         ></Avatar>
                                     );
-                                } else if (index === maxUsersToShow) {
+                                } else if (index === maxUsersToShow && projectMembers.length>maxUsersToShow) {
                                     // Renderuj avatar z liczbą użytkowników, gdy przekracza 5
                                     const additionalUsersCount = projectMembers.length - maxUsersToShow;
                                     return (
                                         <div key={index} className="relative z-10">
-                                            <Avatar src={`data:image/jpeg;base64,${pic}`} className="bg-center bg-cover border-2 border-black rounded-full"></Avatar>
-                                            <span className="absolute bottom-0 right-0 p-1 -mr-1 text-black bg-white rounded-full">
+                                           {/* <Avatar src={`data:image/jpeg;base64,${pic}`} className="bg-center bg-cover border-2 border-black rounded-full"></Avatar> */}
+                                            <span className="absolute bottom-0 right-0  p-1 -mr-1 text-black bg-white rounded-full">
                                                 {`+${additionalUsersCount}`}
                                             </span>
                                         </div>

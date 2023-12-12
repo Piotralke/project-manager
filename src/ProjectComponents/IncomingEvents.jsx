@@ -1,38 +1,28 @@
 import { Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
+import { useAuth } from "../auth";
+import { useParams } from "react-router-dom";
+import RequestHandler from "../Miscs/RequestHandler";
 
 export default function IncomingEvent({ isEvent }) {
   const [event, setEvent] = useState();
   const [currentTime, setCurrentTime] = useState(new Date());
+  const auth = useAuth()
+  const {projectId} = useParams()
     let days;
-  useEffect(() => {
-    // Pobieranie zbliżającego się eventu
-    if (isEvent === true) {
-      setEvent({
-        uuid: "321-321-321",
-        title: "Zrobienie bazy danych",
-        description: "Jakistam opis",
-        dueTo: "2023-11-26T15:18:40.942694+02:00",
-        startTime: "2023-11-26T15:16:40.942694+02:00",
-        type: "EVENT", // "TASK"
-        
-      });
-    } else {
-      setEvent({
-        uuid: "321-321-321",
-        title: "Zrobienie bazy danych",
-        description: "Jakistam opis",
-        dueTo: "2023-11-26T15:16:40.942694+02:00",
-        startTime: "2023-12-26T15:16:40.942694+02:00",
-        type: "TASK", // "TASK"
-        
-      });
+    const fetchData = async()=>{
+      const user = await auth.getUser();
+      const response = await RequestHandler.get(`/api/projects/${projectId}/GetNearestEvent?userId=${user.uuid}&eventType=${isEvent? 1 : 0}`,auth.getToken())
+      setEvent(response)
     }
+  useEffect(() => {
+    fetchData()
   }, [isEvent]); 
 
   // Function to calculate remaining time
   const calculateRemainingTime = () => {
-    const dueTime = new Date(event?.startTime);
+    
+    const dueTime = new Date( isEvent? event?.startTime : event?.dueTo );
     const timeDifference = dueTime - currentTime;
 
     if (timeDifference <= 0) {
@@ -69,10 +59,11 @@ export default function IncomingEvent({ isEvent }) {
         </Typography>
       )}
       <Typography variant="paragraph">{event?.description}</Typography>
-      <Typography variant="small">
-        {isEvent ? "Rozpoczyna się:" : "Wykonać do:"} {new Date(event?.startTime).toLocaleString()}
-      </Typography>
-      {isEvent===true && (<Typography variant="small">Zakończy się: {new Date(event?.dueTo).toLocaleString()} </Typography>) }
+      {isEvent?<Typography variant="small">
+        Rozpoczyna się: {new Date(event?.startTime).toLocaleString()}
+      </Typography> : null}
+      
+      <Typography variant="small"> {isEvent? "Zakończy się:": "Wykonać do:" } {new Date(event?.dueTo).toLocaleString()} </Typography>
       <Typography variant="small">
         Pozostało: {calculateRemainingTime()}
       </Typography>

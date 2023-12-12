@@ -9,13 +9,18 @@ export default function ProjectMembers() {
     const {projectId} = useParams()
     const [projectMembers, setProjectMembers] = useState([])
     const fetchPics = async (members) => {
-
-        members.forEach(async member => {
-            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken())
-            console.log(pic)
-            
-            setProjectMembers([...projectMembers, {...member, pic}])
-        });
+        const promises = members.map(async (member) => {
+            const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken());
+            const data = {
+                ...member,pic
+            }
+            return data;
+          });
+        
+          const profilePictures = await Promise.all(promises);
+        
+          setProjectMembers([...projectMembers, ...profilePictures]);
+        
     }
     const fetchData = async () =>{
         const u = await auth.getUser()

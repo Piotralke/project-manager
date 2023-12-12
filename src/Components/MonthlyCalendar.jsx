@@ -131,7 +131,7 @@ const MonthlyCalendar = () => {
                   startDay.setHours(0, 0, 0, 0);
                   const endDay = new Date(event.dueTo)
                   endDay.setHours(23, 59, 59, 99);
-                  return isWithinInterval(day, { start: startDay, end: endDay })
+                  return isWithinInterval(day,{start:startDay,end:endDay} )
                 }
                 );
                 const tasksForDay = tasks.filter(task =>
