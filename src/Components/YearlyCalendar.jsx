@@ -152,12 +152,7 @@ const Calendar = () => {
                   endDay.setHours(23, 59, 59, 99);
                   return isWithinInterval(currentDate, { start: startDay, end: endDay });
                 });
-                if (tasksForDay.length > 0) {
-                  console.log(tasksForDay)
-                }
-                if (eventForDay.length > 0) {
-                  console.log(eventForDay)
-                }
+
                 return (
                   <Tooltip className={`${eventForDay?.length > 0 || tasksForDay?.length > 0 ? "" : "hidden"}`} content={contentForDay(eventForDay, tasksForDay)}>
                     <div

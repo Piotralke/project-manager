@@ -10,6 +10,10 @@ import {
   Input,
   Select,
   Option,
+  List,
+  ListItem,
+  ListItemSuffix,
+  Checkbox,
 } from "@material-tailwind/react";
 import MonthlyCalendar from "../Components/MonthlyCalendar";
 import MainPageHeader from "../Components/MainPageHeader";
@@ -17,7 +21,7 @@ import { useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import { useAuth } from "../auth";
 import RequestHandler from "../Miscs/RequestHandler";
-
+import ReactPaginate from "react-paginate";
 export default function MainCalendar() {
   const [taskDialog, isTaskDialogOpen] = useState(false);
   const [eventDialog, isEventDialogOpen] = useState(false);
@@ -26,13 +30,20 @@ export default function MainCalendar() {
   const [selectedProject, setSelectedProject] = useState();
   const [userProjects, setUserProjects] = useState([]);
   const [startDate, setStartDate] = useState();
-  const [projectMembers,setProjectMembers]= useState();
+  const [projectMembers, setProjectMembers] = useState();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState([])
   const auth = useAuth();
+  const ITEMS_PER_PAGE = 3;
+
   const handleTaskDialogClose = () => {
     isTaskDialogOpen(false);
+    resetForm();
   };
   const handleEventDialogClose = () => {
     isEventDialogOpen(false);
+    resetForm();
   };
   const handleTaskDialogOpen = () => {
     isTaskDialogOpen(true);
@@ -48,12 +59,13 @@ export default function MainCalendar() {
       dueTo: startDate,
       startTime: null,
       type: 0,
-      projectUuid: selectedProject
+      projectUuid: selectedProject,
+      members: selectedMembers
     }
     console.log(data)
-    const response = await RequestHandler.post(`/api/projects/AddProjectEvent`,auth.getToken(),data)
+    const response = await RequestHandler.post(`/api/projects/AddProjectEvent`, auth.getToken(), data)
     console.log(response);
-    
+
   };
   const handleTitleChange = (value) => {
     setTitle(value);
@@ -69,26 +81,52 @@ export default function MainCalendar() {
     );
     setUserProjects(projects);
   };
-  const fetchProjectMembers = async () =>{
-    
-    const members = await RequestHandler.get(`/api/projects/${selectedProject}/GetProjectMembers`,auth.getToken()) // tu są same id
+  const fetchProjectMembers = async () => {
+
+    const members = await RequestHandler.get(`/api/projects/${selectedProject}/GetProjectMembers`, auth.getToken()) // tu są same id
+    setProjectMembers(members);
     console.log(members)
   }
-  useEffect(()=>{
-    fetchProjectMembers()
-  },[selectedProject])
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+  const resetForm = () => {
+    setTitle("");
+    setDesc("");
+    setSelectedProject(null);
+    setStartDate(null);
+    setProjectMembers([]);
+    setCurrentPage(0);
+    setSearchQuery("");
+    setSelectedMembers([]);
+  };
   useEffect(() => {
+    fetchProjectMembers();
+  }, [currentPage, searchQuery]);
+  useEffect(() => {
+    if (selectedProject) {
 
+      fetchProjectMembers()
+    }
+  }, [selectedProject])
+  useEffect(() => {
     fetchData()
   }, []);
-  
-  const ExampleCustomTimeInput = ({ date, value, onChange }) => (
-    <input
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="border border-gray-400 rounded-md"
-    />
+  const filteredMembers = projectMembers?.filter((member) =>
+    `${member.name} ${member.surname}`.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  const checkItem = (value) => {
+    const isSelected = selectedMembers.includes(value);
+    if (isSelected) {
+      setSelectedMembers((prevSelected) =>
+        prevSelected.filter((id) => id !== value)
+      );
+    } else {
+      setSelectedMembers((prevSelected) => [...prevSelected, value]);
+    }
+  }
+  const offset = currentPage * ITEMS_PER_PAGE;
+  const currentPageMembers = filteredMembers?.slice(offset, offset + ITEMS_PER_PAGE);
   return (
     <div className="grid w-full h-full grid-cols-1 gap-5 p-5 bg-gray-300 lg:grid-cols-5 lg:grid-rows-8 grid-rows ">
       <MainPageHeader></MainPageHeader>
@@ -118,41 +156,87 @@ export default function MainCalendar() {
           <DialogHeader>Utwórz nowe zadanie</DialogHeader>
           <DialogBody>
             {/* Formularz do tworzenia projektu */}
-            <div className="flex flex-col space-y-3">
-              <Input
-                label="Tytuł"
-                variant="outlined"
-                margin="normal"
-                color="amber"
-                onChange={(e) => handleTitleChange(e.target.value)}
-              />
-              <Textarea
-                label="Opis"
-                color="amber"
-                variant="outlined"
-                margin="normal"
-                rows={4}
-                onChange={(e) => handleDescriptionChange(e.target.value)}
-              />
-              <Select color="amber" label="Do jakiego projektu przypisać zadanie?" onChange={(e)=>{setSelectedProject(e)}} >
-                {userProjects?.map((project) => (
-                  <Option key={project.uuid} value={project.uuid}>
-                    {project.title}
-                  </Option>
-                ))}
-              </Select>
-              <Typography variant="h6">Do kiedy wykonać zadanie?</Typography>
+            <div className="flex flex-row space-x-2 w-full">
+              <div className="flex flex-col flex-grow space-y-3">
+                <Input
+                  label="Tytuł"
+                  variant="outlined"
+                  margin="normal"
+                  color="amber"
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                />
+                <Textarea
+                  label="Opis"
+                  color="amber"
+                  variant="outlined"
+                  margin="normal"
+                  rows={4}
+                  onChange={(e) => handleDescriptionChange(e.target.value)}
+                />
+                <Select color="amber" label="Do jakiego projektu przypisać zadanie?" onChange={(e) => { setSelectedProject(e) }} >
+                  {userProjects?.map((project) => (
+                    <Option key={project.uuid} value={project.uuid}>
+                      {project.title}
+                    </Option>
+                  ))}
+                </Select>
 
-              <ReactDatePicker
-                className="p-2 border border-black rounded-md"
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-                showTimeSelect
-                closeOnScroll={true}
-           //     customTimeInput={<ExampleCustomTimeInput />}
-              />
+                <Typography variant="h6">Do kiedy wykonać zadanie?</Typography>
+                <ReactDatePicker
+                  className="p-2 border border-black rounded-md"
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  showTimeSelect
+                  closeOnScroll={true}
+                //     customTimeInput={<ExampleCustomTimeInput />}
+                />
+              </div>
+              <div>
+                {projectMembers?.length > 0 ?
+                  <>
+                    <Typography variant="h6">Do kogo przypisać zadanie?</Typography>
+                    <Input
+                      color="amber"
+                      label="Wyszukaj członka:"
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <Card >
+                      <List>
+                        {currentPageMembers.map((member) => (
+                          <ListItem key={member.uuid} value={member.uuid} onClick={() => { checkItem(member.uuid) }} className={
+                            selectedMembers.includes(member.uuid)
+                              ? "font-bold p-1"
+                              : "p-1"
+                          }>
+                            {member.name + " " + member.surname}
+                            <ListItemSuffix>
+                              <Checkbox color="amber" checked={selectedMembers.includes(member.uuid)}></Checkbox>
+                            </ListItemSuffix>
+                          </ListItem>
+                        ))}
+                      </List>
+                    </Card>
+                    <div className="flex flex-row">
+                      {filteredMembers?.length > ITEMS_PER_PAGE && (
+                        <ReactPaginate
+                          className="flex flex-row justify-evenly w-full"
+                          previousLabel={"poprzednia"}
+                          nextLabel={"następna"}
+                          breakLabel={""}
+                          pageCount={Math.ceil(filteredMembers?.length / ITEMS_PER_PAGE)}
+                          marginPagesDisplayed={2}
+                          pageRangeDisplayed={5}
+                          onPageChange={handlePageChange}
+                          containerClassName={"pagination"}
+                          subContainerClassName={"pages pagination"}
+                          activeClassName={"active"}
+                        />
+                      )}
+                    </div>
 
-              {/* Pozostałe pola formularza (lista użytkowników, czy projekt jest prywatny) */}
+                  </>
+                  : null}
+              </div>
             </div>
           </DialogBody>
           <DialogFooter className="flex flex-row space-x-3">
@@ -162,7 +246,7 @@ export default function MainCalendar() {
             <Button
               color="amber"
               type="submit"
-              disabled={!title || !desc || !selectedProject || !startDate}
+              disabled={!title || !desc || !selectedProject || !startDate || !selectedMembers.length>0}
             >
               Dodaj zadanie
             </Button>
