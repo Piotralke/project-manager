@@ -12,7 +12,11 @@ export default function Projects() {
     const [desc, setDesc] = useState();
     const [isPrivate, setIsPrivate] = useState(false);
     const [projects, setProjects] = useState();
+    
     const auth = useAuth()
+
+    
+
     const handleTitleChange = (value) => {
         setTitle(value);
     };
