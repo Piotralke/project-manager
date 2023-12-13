@@ -22,7 +22,10 @@ import ReactDatePicker from "react-datepicker";
 import { useAuth } from "../auth";
 import RequestHandler from "../Miscs/RequestHandler";
 import ReactPaginate from "react-paginate";
+import { useParams } from "react-router-dom";
+import ProjectHeader from "../Components/ProjectHeader";
 export default function MainCalendar() {
+  const { projectId } = useParams()
   const [taskDialog, isTaskDialogOpen] = useState(false);
   const [eventDialog, isEventDialogOpen] = useState(false);
   const [title, setTitle] = useState();
@@ -52,13 +55,13 @@ export default function MainCalendar() {
   const handleEventDialogOpen = () => {
     isEventDialogOpen(true);
   };
-  const handleSubmit = async (e,type) => {
+  const handleSubmit = async (e, type) => {
     e.preventDefault();
     const data = {
       title: title,
       description: desc,
-      dueTo: type===0? startDate : endDate,
-      startTime: type===0? null : startDate,
+      dueTo: type === 0 ? startDate : endDate,
+      startTime: type === 0 ? null : startDate,
       type: type,
       projectUuid: selectedProject,
       members: selectedMembers
@@ -94,7 +97,8 @@ export default function MainCalendar() {
   const resetForm = () => {
     setTitle("");
     setDesc("");
-    setSelectedProject(null);
+    if (!projectId)
+      setSelectedProject(null);
     setStartDate(null);
     setEndDate(null);
     setProjectMembers([]);
@@ -112,6 +116,7 @@ export default function MainCalendar() {
     }
   }, [selectedProject])
   useEffect(() => {
+    setSelectedProject(projectId)
     fetchData()
   }, []);
   const filteredMembers = projectMembers?.filter((member) =>
@@ -131,7 +136,7 @@ export default function MainCalendar() {
   const currentPageMembers = filteredMembers?.slice(offset, offset + ITEMS_PER_PAGE);
   return (
     <div className="grid w-full h-full grid-cols-1 gap-5 p-5 bg-gray-300 lg:grid-cols-5 lg:grid-rows-8 grid-rows ">
-      <MainPageHeader></MainPageHeader>
+      {projectId ? <ProjectHeader></ProjectHeader> : <MainPageHeader></MainPageHeader>}
       <div className="flex flex-row space-x-4">
         <Button
           color="amber"
@@ -154,7 +159,7 @@ export default function MainCalendar() {
         </Card>
       </div>
       <Dialog open={taskDialog}>
-        <form onSubmit={(e)=>{handleSubmit(e,0)}}>
+        <form onSubmit={(e) => { handleSubmit(e, 0) }}>
           <DialogHeader>Utwórz nowe zadanie</DialogHeader>
           <DialogBody>
             {/* Formularz do tworzenia projektu */}
@@ -175,13 +180,16 @@ export default function MainCalendar() {
                   rows={4}
                   onChange={(e) => handleDescriptionChange(e.target.value)}
                 />
-                <Select color="amber" label="Do jakiego projektu przypisać zadanie?" onChange={(e) => { setSelectedProject(e) }} >
-                  {userProjects?.map((project) => (
-                    <Option key={project.uuid} value={project.uuid}>
-                      {project.title}
-                    </Option>
-                  ))}
-                </Select>
+                {
+                  projectId ? null : <Select color="amber" label="Do jakiego projektu przypisać zadanie?" onChange={(e) => { setSelectedProject(e) }} >
+                    {userProjects?.map((project) => (
+                      <Option key={project.uuid} value={project.uuid}>
+                        {project.title}
+                      </Option>
+                    ))}
+                  </Select>
+                }
+
 
                 <Typography variant="h6">Do kiedy wykonać zadanie?</Typography>
                 <ReactDatePicker
@@ -256,7 +264,7 @@ export default function MainCalendar() {
         </form>
       </Dialog>
       <Dialog open={eventDialog}>
-        <form onSubmit={(e)=>{handleSubmit(e,1)}}>
+        <form onSubmit={(e) => { handleSubmit(e, 1) }}>
           <DialogHeader>Utwórz nowe wydarzenie</DialogHeader>
           <DialogBody>
             {/* Formularz do tworzenia projektu */}
@@ -277,13 +285,14 @@ export default function MainCalendar() {
                   rows={4}
                   onChange={(e) => handleDescriptionChange(e.target.value)}
                 />
-                <Select color="amber" label="Do jakiego projektu przypisać zadanie?" onChange={(e) => { setSelectedProject(e) }} >
+                {projectId ? null : <Select color="amber" label="Do jakiego projektu przypisać zadanie?" onChange={(e) => { setSelectedProject(e) }} >
                   {userProjects?.map((project) => (
                     <Option key={project.uuid} value={project.uuid}>
                       {project.title}
                     </Option>
                   ))}
-                </Select>
+                </Select>}
+
                 <div className="flex flex-row space-x-2">
                   <div className="flex flex-col">
                     <Typography variant="h6">Kiedy ma zacząć sie wydarzenie?</Typography>

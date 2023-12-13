@@ -31,6 +31,7 @@ function App() {
                 <Route path="/projects/:projectId" element={<ProjectMainPage></ProjectMainPage>}></Route>
                 <Route path="/projects/:projectId/tasks" element={<ProjectTasksPage></ProjectTasksPage>}></Route>
                 <Route path="/projects/:projectId/chat" element={<ProjectChat></ProjectChat>}></Route>
+                <Route path="/projects/:projectId/calendar" element={<MainCalendar></MainCalendar>}></Route>
               </Route>
             </Routes>
           </BrowserRouter>
