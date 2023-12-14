@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
 import {
@@ -17,6 +17,7 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 import { toggleMenu, setMenuState } from "../Reducers/menuReducer"; // Importuj akcję kreatora
+import { useAuth } from "../auth";
 function NavigationItem(props) {
   return (
     <Link className="flex items-center group " to={props.link}>
@@ -39,7 +40,7 @@ function NavigationItem(props) {
 
 
 export default function Navigation() {
-  const menuCollapsed = useSelector((state) => state.menuCollapsed);
+  const menuCollapsed = useSelector((state) => state.menu.menuCollapsed);
   const dispatch = useDispatch();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const handleToggleMenu = () => {
@@ -89,14 +90,15 @@ export default function Navigation() {
     };
   }, []);
   const [open, setOpen] = useState(false);
-
+  const auth=useAuth()
+  const navigate=useNavigate()
   const openDrawer = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
   return (
     <>
       {windowWidth >= 960 ? (
         <div
-          className={`menuCollapsed ? "basis-1/12" : "basis-1/6" flex flex-col w-full h-full p-5 space-y-5 transition-all duration-200 ${
+          className={`${menuCollapsed ? "basis-1/12" : "basis-1/6"}  flex flex-col w-full h-full p-5 space-y-5 transition-all duration-200 ${
             menuCollapsed ? "items-center" : "items-start"
           }`}
         >
@@ -114,6 +116,8 @@ export default function Navigation() {
 
           <div className="h-0.5 w-full bg-gray-400"></div>
           <NavigationContent></NavigationContent>
+          <div className="flex-grow"></div>
+          <Button className="w-full snap-end" color="red" onClick={()=>{auth.removeToken();navigate("/login") }}>Wyloguj</Button>
         </div>
       ) : (
         <React.Fragment>

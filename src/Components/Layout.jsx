@@ -7,7 +7,7 @@ import Navigation from "./Navigation";
 import { useSelector, useDispatch } from "react-redux";
 import ProjectNavigation from "./ProjectNavigation";
 export default function Layout() {
-  const menuCollapsed = useSelector((state) => state.menuCollapsed);
+  const menuCollapsed = useSelector((state) => state.menu.menuCollapsed);
   const location = useLocation();
   const isProjectPath = location.pathname.startsWith("/projects/");
   return (
@@ -17,7 +17,7 @@ export default function Layout() {
         <div
           className={`${
             menuCollapsed ? "lg:w-1/12" : "lg:w-1/6"
-          } w-full z-10 sticky top-0 lg:h-screen h-1/6 bg-gray-900 transition-all ease-linear duration-200`}
+          } w-full  z-10 sticky top-0 lg:h-screen h-1/6 bg-gray-900 transition-all ease-linear duration-200`}
         >
           {isProjectPath ? (
             <ProjectNavigation/>

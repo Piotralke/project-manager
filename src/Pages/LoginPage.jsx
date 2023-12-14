@@ -39,8 +39,8 @@ const LoginPage = () => {
         try {
             const response = await axios.post("http://localhost:5048/api/users/login", loginData);
             console.log("Login response:", response.data);
-            await auth.setToken(response.data.token)
-            navigate("/home")
+            await auth.setToken(response.data.token);
+            navigate("/home");
         } catch (error) {
             console.error("Login error:", error.response.data);
             // Tutaj możesz dodać kod obsługujący błąd logowania

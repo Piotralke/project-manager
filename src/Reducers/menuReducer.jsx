@@ -27,7 +27,7 @@ const menuReducer = (state = initialState, action) => {
     case SET_STATE:
       return {
         ...state,
-        menuCollapsed: action.state,
+        menuCollapsed: action.menuCollapsed,
       };
     default:
       return state;

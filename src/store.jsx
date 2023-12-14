@@ -1,6 +1,7 @@
 
 import menuReducer from "./Reducers/menuReducer"; // Importuj swój reduktor
-import { createStore, combineReducers } from 'redux';
+import { combineReducers } from 'redux';
+import {configureStore} from "@reduxjs/toolkit"
 import authReducer from "./Reducers/authReducer";
 
 const rootReducer = combineReducers({
@@ -10,6 +11,6 @@ const rootReducer = combineReducers({
 
 
 // Utwórz sklep Redux
-const store = createStore(rootReducer);
+const store = configureStore({reducer: rootReducer});
 
 export default store;
