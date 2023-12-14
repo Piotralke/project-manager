@@ -47,6 +47,14 @@ export default function IncomingEvent({ isEvent }) {
     };
   }, []);
 
+  if(!event)
+  {
+    return(
+      <div className="flex flex-col text-center p-4 space-y-2">
+        <Typography variant="h5" color={isEvent?"red":"blue"}>Brak zbliżającego się {isEvent? "wydarzenia": "zadania"}</Typography>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col text-center p-4 space-y-2">
       {isEvent === true ? (
@@ -67,6 +75,7 @@ export default function IncomingEvent({ isEvent }) {
       <Typography variant="small">
         Pozostało: {calculateRemainingTime()}
       </Typography>
+      
     </div>
   );
 }

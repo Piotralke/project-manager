@@ -56,7 +56,7 @@ const WeeklyCalendar = () => {
   const daysOfWeek = ['Pon', 'Wt', 'Śr', 'Czw', 'Pt', 'Sob', 'Niedz'];
   const weekNumber = getISOWeek(firstDayOfWeek);
   const fetchData = async () => {
-    const request = `/api/projects/${projectId}/GetProjectEvents`;;
+    const request = `/api/projects/${projectId}/GetProjectEvents`;
     const response = await RequestHandler.get(request, auth.getToken());
     const taskEvents = response.filter(event => event.type === 0);
     const regularEvents = response.filter(event => event.type === 1);

@@ -3,11 +3,13 @@ import { BiBell } from "react-icons/bi";
 import { useAuth } from "../auth";
 import { useState,useEffect } from "react";
 import RequestHandler from "../Miscs/RequestHandler";
+import { useParams } from "react-router-dom";
 export default function ProjectHeader() {
     const [userData, setUserData] = useState({});
     const [userPic,setUserPic] = useState();
     const auth = useAuth();
-
+    const [projectData, setProjectData] = useState()
+    const {projectId} = useParams()
     useEffect(() => {
         const fetchUser = async () => {
             const user = await auth.getUser()
@@ -16,21 +18,14 @@ export default function ProjectHeader() {
             const profilePic = await RequestHandler.get(`/api/users/profile-picture?userId=${user.uuid}`,auth.getToken())
             setUserPic(profilePic)
             }
-        
+        const fetchProject = async() =>{
+            const response = await RequestHandler.get(`/api/projects/${projectId}`,auth.getToken())
+            setProjectData(response)
+        }
         fetchUser().catch(console.error)
-        
+        fetchProject()
 
     }, [])
-    const [projectData, setProjectData] = useState({
-        uuid: "123-321-123",
-        title: "Project-Manager",
-        description: "System do zarządzania projektami studenckimi",
-        status: "STARTED",
-        createdAt: "2023-10-26 15:16:40.942694+02",
-        isPrivate: false,
-    });
-
-
     const [notifications, setNotifications] = useState([
         {
             uuid: "123-321",
@@ -46,8 +41,8 @@ export default function ProjectHeader() {
     return (
         <section className="flex w-full col-span-full">
             <div className="flex-grow">
-                <Typography variant="h2" className="font-bold">{projectData.title}</Typography>
-                <Typography variant="paragraph">{projectData.description}</Typography>
+                <Typography variant="h2" className="font-bold">{projectData?.title}</Typography>
+                <Typography variant="paragraph">{projectData?.description}</Typography>
             </div>
             <section className="flex flex-row space-x-3">
                 <Typography variant="lead">{userData?.name + " " +userData?.surname}</Typography>

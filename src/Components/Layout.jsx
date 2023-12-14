@@ -8,10 +8,7 @@ import { useSelector, useDispatch } from "react-redux";
 import ProjectNavigation from "./ProjectNavigation";
 export default function Layout() {
   const menuCollapsed = useSelector((state) => state.menuCollapsed);
-  const navigate = useNavigate();
   const location = useLocation();
-  const { projectId } = useParams();
-  // Check if the current path starts with "/projects/"
   const isProjectPath = location.pathname.startsWith("/projects/");
   return (
     <div className="flex flex-col min-h-screen"> 

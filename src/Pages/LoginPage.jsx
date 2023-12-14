@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../auth";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 const LoginPage = () => {
     const [loginData, setLoginData] = useState({ Email: "", Password: "" });
     const [registrationData, setRegistrationData] = useState({
@@ -39,7 +39,7 @@ const LoginPage = () => {
         try {
             const response = await axios.post("http://localhost:5048/api/users/login", loginData);
             console.log("Login response:", response.data);
-            auth.setToken(response.data.token)
+            await auth.setToken(response.data.token)
             navigate("/home")
         } catch (error) {
             console.error("Login error:", error.response.data);

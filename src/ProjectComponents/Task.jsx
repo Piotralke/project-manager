@@ -1,32 +1,31 @@
 import { Avatar, Button, Card, Tooltip, Typography } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-
+import RequestHandler from "../Miscs/RequestHandler";
+import { useAuth } from "../auth";
 export default function Task({ taskData }) {
+  const auth=useAuth()
   const [currentTime, setCurrentTime] = useState(new Date());
-  const { userUuids } = taskData.userEvents;
-  const [members, setMembers] = useState([
-    {
-      uuid: "123-321-321",
-      name: "John",
-      surname: "Doe",
-      ProfileImageFileName: "https://i.pravatar.cc/300",
-    },
-    {
-      uuid: "123-321-321",
-      name: "Twój",
-      surname: "Stary",
-      ProfileImageFileName: "https://i.pravatar.cc/300",
-    },
-    {
-      uuid: "123-321-321",
-      name: "Kiljam",
-      surname: "Mekambe",
-      ProfileImageFileName: "https://i.pravatar.cc/300",
-    },
-  ]);
+  const [members, setMembers] = useState([]);
+  const fetchPics = async (users) => {
+    const promises = users.map(async (member) => {
+        const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken());
+        const result = {...member,pic}
+        console.log(result)
+        return result;
+    });
+
+    const profilePictures = await Promise.all(promises);
+    console.log(profilePictures)
+    setMembers([...members, ...profilePictures]);
+}
+  const fetchData = async () =>{
+    const users = await RequestHandler.get(`/api/user-events/get-users-for-event/${taskData.uuid}`, auth.getToken())
+    await fetchPics(users)
+
+  }
   useEffect(() => {
-    //fetch user data
-  }, []);
+    fetchData()
+  }, [taskData]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -80,17 +79,17 @@ export default function Task({ taskData }) {
         {members.map((member, index) => {
           return (
             <Tooltip content={`${member.name} ${member.surname}`}>
-              <Avatar src={member.ProfileImageFileName}></Avatar>
+              <Avatar src={`data:image/jpeg;base64,${member.pic}`}></Avatar>
             </Tooltip>
           );
         })}
       </div>
-      {taskData.status === "PLANNED" && (
+      {taskData.status === 0 && (
         <Button color="green" size="sm" className="ml-auto">
           Rozpocznij
         </Button> //po kliknięciu zmiana statusu zadania na rozpoczęte
       )}
-      {taskData.status === "STARTED" && (
+      {taskData.status === 1 && (
         <Button color="red" size="sm" className="ml-auto">
           Zakończ
         </Button> //po kliknięciu zmiana statusu zadania na zakończone

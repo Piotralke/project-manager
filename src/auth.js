@@ -1,22 +1,23 @@
 // auth.js
-import { useQueryClient, useQuery } from 'react-query';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-
+import { setToken as setTokenAction, setUser as setUserAction, removeToken as removeTokenAction } from './Reducers/authReducer';
 const TOKEN_KEY = 'oc5NoAPZL7JjoHWkZVF2xxufqzMtyXcA';
-const COOKIE_EXPIRATION_TIME = 1; // W godzinach
+const COOKIE_EXPIRATION_TIME = 2; // W godzinach
 
 // Pobierz dane użytkownika z API w oparciu o token
-const fetchUser = async () => {
+const fetchUser = async (dispatch) => {
   const token = getCookie(TOKEN_KEY);
   if (!token) return null;
 
   try {
     const response = await axios.get('http://localhost:5048/api/users/current', {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
     });
 
+    dispatch(setUserAction(response.data));
     return response.data;
   } catch (error) {
     throw new Error('Failed to fetch user data');
@@ -39,39 +40,52 @@ const setCookie = (name, value, hours) => {
 };
 
 export function useAuth() {
-  const queryClient = useQueryClient();
-
-  const setToken = (token) => {
-    setCookie(TOKEN_KEY, token, COOKIE_EXPIRATION_TIME);
-    queryClient.setQueryData('token', token);
-  };
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
 
   const getToken = () => {
-    return getCookie(TOKEN_KEY);
+    const token = getCookie(TOKEN_KEY)
+    if (!token) return null;
+    return token
+  }
+  const setToken = async (token) => {
+    setCookie(TOKEN_KEY, token, COOKIE_EXPIRATION_TIME);
+    dispatch(setTokenAction(token));
   };
 
   const removeToken = () => {
     document.cookie = `${TOKEN_KEY}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    queryClient.setQueryData('token', null);
+    dispatch(removeTokenAction());
+  };
+
+  const isAuthenticated = async () => {
+    const token = getToken()
+    if (!token) {
+      return false;
+    }
+
+    try {
+      await fetchUser(dispatch);
+      return true; // Jeśli autoryzacja się powiedzie, użytkownik jest zalogowany
+    } catch (error) {
+      return false;
+    }
   };
 
   const getUser = async () => {
     try {
-      const response = await fetchUser();
+      const response = await fetchUser(dispatch);
       return response;
     } catch (error) {
       throw new Error('Failed to fetch user data');
     }
   };
 
-  // const { data: user } = useQuery('user', fetchUser, {
-  //   enabled: !!getToken(), // Pobierz dane użytkownika tylko, gdy jest dostępny token
-  // });
-
   return {
     setToken,
-    getToken,
     removeToken,
     getUser,
+    getToken,
+    isAuthenticated,
   };
 }
