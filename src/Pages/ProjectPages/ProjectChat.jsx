@@ -14,6 +14,7 @@ export default function ProjectChat() {
     const {projectId} = useParams()
     const fetchData = async () =>{
         const response = await RequestHandler.get(`/api/chat/GetProjectMessages/${projectId}`, auth.getToken())
+        console.log(response.result)
         setProjectMessages(response)
     }
     useEffect(()=>{
@@ -27,7 +28,7 @@ export default function ProjectChat() {
                 <CardBody className="h-full p-2 bg-gray-300 rounded-xl">
                     <div className="h-full">
                         <div className="overflow-y-auto flex flex-col max-h-[94%]">
-                            {projectMessages.map((message,index)=>{
+                            {projectMessages?.map((message,index)=>{
                                 return(
                                     <Message key={message.uuid} messageData = {message}></Message>
                                 )

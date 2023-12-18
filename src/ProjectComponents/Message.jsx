@@ -9,7 +9,7 @@ export default function Message(messageData) {
     const [selectedImage, setSelectedImage] = useState(null);
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
-    useEffect(()=>{
+    useEffect(()=>{ 
         setMessage(messageData)
     },[messageData])
     const [message, setMessage] = useState();
@@ -54,13 +54,13 @@ export default function Message(messageData) {
         <div className="flex flex-row">
             <Avatar className="mt-auto" src="https://i.pravatar.cc/300"></Avatar>
             <div className="flex flex-col p-1 mt-auto space-y-1 text-left">
-                <Typography variant="small">{message.sender.name} {message.sender.surname}</Typography>
+                <Typography variant="small">{message?.sender?.name} {message?.sender?.surname}</Typography>
                 <div className="p-2 bg-white rounded-xl">
-                    <Typography variant="small">{message.content}</Typography>
+                    <Typography variant="small">{message?.content}</Typography>
                 </div>
-                {message.hasAttachment ?
+                {message?.hasAttachment ?
                     <div className="grid grid-cols-3 gap-1">
-                        {message.messageAttachment.map((attachment, index) => (
+                        {message?.messageAttachment.map((attachment, index) => (
                             isImageFile(attachment.fileType) ?
                                 <img
                                     key={index}
