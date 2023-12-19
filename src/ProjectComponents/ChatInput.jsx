@@ -30,14 +30,16 @@ export default function ChatInput() {
       content: message,
       hasAttachment: attachments.length>0? true : false,
       projectUuid: projectId,
-      senderUuid: user.uuid
+      senderUuid: user.uuid,
+      messageAttachments: []
+
     }
     const response = await RequestHandler.post(`/api/chat/SendMessage`,auth.getToken(),data);
     // Dodaj swoją logikę wysyłania wiadomości i załączników
   };
   const isButtonDisabled = !message && attachments.length === 0;
   return (
-    <div className="flex flex-row w-full p-1 space-x-2">
+    <div className="flex flex-row mt-auto w-full p-1 space-x-2">
       <label htmlFor="fileInput" className="cursor-pointer">
         <TiAttachment className="w-10 h-10"></TiAttachment>
         <input

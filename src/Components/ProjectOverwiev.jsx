@@ -24,30 +24,24 @@ export default function ProjectOverview({ projectUuid }) {
         const promises = members.map(async (member) => {
             const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken());
             const result = {...member,pic}
-            console.log(result)
             return result;
         });
 
         const profilePictures = await Promise.all(promises);
-        console.log(profilePictures)
         setProjectMembers([...projectMembers, ...profilePictures]);
     }
     const fetchProject = async () => {
         if (projectUuid) {
-            console.log("juhu")
 
             const data = await RequestHandler.get(`/api/projects/${projectUuid}`, auth.getToken())
-            console.log(data)
             setProjectData(data)
             const members = await RequestHandler.get(`/api/projects/${projectUuid}/getProjectMembers`, auth.getToken())
-            console.log(members)
             await fetchPics(members)
 
         }
 
     }
     useEffect(() => {
-        console.log(projectUuid)
         fetchProject().catch(console.error)
         isLoading(false)
     }, [])

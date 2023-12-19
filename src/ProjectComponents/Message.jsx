@@ -2,15 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Avatar, Typography, Dialog, Transition, Button } from "@material-tailwind/react";
 import { useParams } from "react-router-dom";
 import { FaFile } from "react-icons/fa";
-
-export default function Message(messageData) {
+import { useAuth } from '../auth';
+import RequestHandler from '../Miscs/RequestHandler';
+export default function Message({messageData}) {
     const { projectId } = useParams();
     const [open, setOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [userPic,setUserPic] = useState();
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
-
+    const auth = useAuth();
+    const [userMessage,isUserMessage] = useState(false)
+    const fetchUserPic = async () =>{
+        const u = await auth.getUser();
+        if(messageData.senderUuid === u.uuid)
+            isUserMessage(true)
+        const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${messageData.senderUuid}`, auth.getToken());
+        setUserPic(pic);
+    }
     useEffect(()=>{ 
+        console.log(messageData)
         setMessage(messageData)
+        fetchUserPic()
     },[messageData])
     const [message, setMessage] = useState();
 
@@ -52,10 +64,11 @@ export default function Message(messageData) {
 
     return (
         <div className="flex flex-row">
-            <Avatar className="mt-auto" src="https://i.pravatar.cc/300"></Avatar>
-            <div className="flex flex-col p-1 mt-auto space-y-1 text-left">
-                <Typography variant="small">{message?.sender?.name} {message?.sender?.surname}</Typography>
-                <div className="p-2 bg-white rounded-xl">
+            {isUserMessage? null :<Avatar className="mt-auto" src={`data:image/jpeg;base64,${userPic}`}></Avatar> }
+            
+            <div className={`flex flex-col p-1 mt-auto space-y-1 text-left ${isUserMessage ? "ml-auto": null}`}>
+                {isUserMessage? null:<Typography variant="small">{message?.sender?.name} {message?.sender?.surname}</Typography>}
+                <div className={`p-2 ${isUserMessage? "bg-amber-300" : "bg-white"} rounded-xl`}>
                     <Typography variant="small">{message?.content}</Typography>
                 </div>
                 {message?.hasAttachment ?
