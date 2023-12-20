@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Avatar, Typography, Dialog, Transition, Button } from "@material-tailwind/react";
+import { Avatar, Typography, Dialog, Transition, Button, Spinner } from "@material-tailwind/react";
 import { useParams } from "react-router-dom";
 import { FaFile } from "react-icons/fa";
 import { useAuth } from '../auth';
@@ -10,24 +10,39 @@ export default function Message({messageData}) {
     const [selectedImage, setSelectedImage] = useState(null);
     const [userPic,setUserPic] = useState();
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+    const [isLoading,setLoading] = useState(true)
     const auth = useAuth();
     const [userMessage,isUserMessage] = useState(false)
+    const[attachmentInfo,setAttachmentInfo]=useState([]);
     const fetchUserPic = async () =>{
         const u = await auth.getUser();
+        console.log(u)
         if(messageData.senderUuid === u.uuid)
             isUserMessage(true)
         const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${messageData.senderUuid}`, auth.getToken());
         setUserPic(pic);
+        setLoading(false)
+    }
+    const fetchPicsData = async () =>{
+        console.log(messageData.messageAttachments)
+        
+        messageData.messageAttachments.map(async (attachment)=> {
+            console.log(attachment)
+            const response = await RequestHandler.get(`/api/chat/GetAttachmentContext`,auth.getToken(),attachment)
+            setAttachmentInfo([...attachmentInfo,response])
+        })
     }
     useEffect(()=>{ 
-        console.log(messageData)
+        
         setMessage(messageData)
         fetchUserPic()
+        fetchPicsData()
+        
     },[messageData])
     const [message, setMessage] = useState();
 
     const attachmentContainerClass = () => {
-        const attachmentCount = message.messageAttachment.length;
+        const attachmentCount = message.messageAttachments.length;
 
         if (attachmentCount === 1) {
             return "col-span-full";
@@ -41,7 +56,7 @@ export default function Message({messageData}) {
     }
 
     function isImageFile(fileType) {
-        return ['jpg', 'jpeg', 'png'].includes(fileType.toLowerCase());
+        return ['.jpg', '.jpeg', '.png'].includes(fileType.toLowerCase());
     }
 
     const handleClickImage = (imagePath) => {
@@ -61,32 +76,35 @@ export default function Message({messageData}) {
             setImageSize({ width: image.width, height: image.height });
         };
     }, [selectedImage]);
-
+    if(isLoading)
+    return(
+        <Spinner color="amber"></Spinner>
+    )
     return (
         <div className="flex flex-row">
-            {isUserMessage? null :<Avatar className="mt-auto" src={`data:image/jpeg;base64,${userPic}`}></Avatar> }
+            {userMessage? null :<Avatar className="mt-auto" src={`data:image/jpeg;base64,${userPic}`}></Avatar> }
             
-            <div className={`flex flex-col p-1 mt-auto space-y-1 text-left ${isUserMessage ? "ml-auto": null}`}>
-                {isUserMessage? null:<Typography variant="small">{message?.sender?.name} {message?.sender?.surname}</Typography>}
-                <div className={`p-2 ${isUserMessage? "bg-amber-300" : "bg-white"} rounded-xl`}>
+            <div className={`flex flex-col p-1 mt-auto space-y-1 text-left ${userMessage ? "ml-auto": null}`}>
+                {userMessage? null:<Typography variant="small">{message?.sender?.name} {message?.sender?.surname}</Typography>}
+                <div className={`p-2 ${userMessage? "bg-amber-300" : "bg-gray-300"} rounded-xl`}>
                     <Typography variant="small">{message?.content}</Typography>
                 </div>
                 {message?.hasAttachment ?
                     <div className="grid grid-cols-3 gap-1">
-                        {message?.messageAttachment.map((attachment, index) => (
+                        {message?.messageAttachments.map((attachment, index) => (
                             isImageFile(attachment.fileType) ?
                                 <img
                                     key={index}
-                                    src={attachment.filePath}
-                                    alt={`${attachment.fileName}.${attachment.fileType}`}
+                                    src={`data:image/jpeg;base64,${attachmentInfo[index]}`}
+                                    alt={`${attachment.fileName}${attachment.fileType}`}
                                     className={`${attachmentContainerClass()} h-full rounded-xl cursor-pointer object-cover`}
                                     onClick={() => handleClickImage(attachment.filePath)}
                                 />
                                 :
-                                <div key={index} className={`rounded-xl bg-white p-2  ${attachmentContainerClass()}`}>
+                                <div key={index} className={`rounded-xl bg-gray-300 p-2  ${attachmentContainerClass()}`}>
                                     <div className="flex flex-row items-center col-span-1 hover:cursor-pointer" onClick={() => downloadFile(attachment.filePath)}>
                                         <FaFile className="w-8 h-8"></FaFile>
-                                        <Typography variant="small" className="ml-1 font-bold">{attachment.fileName}.{attachment.fileType}</Typography>
+                                        <Typography variant="small" className="ml-1 font-bold">{attachment.fileName}{attachment.fileType}</Typography>
                                     </div>
                                 </div>
                         ))}

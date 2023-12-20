@@ -4,12 +4,14 @@ import { useAuth } from '../auth';
 const BASE_URL = 'http://localhost:5048';
 
 const RequestHandler = {
-  get: async (endpoint, token,params = {},) => {
+  get: async (endpoint, token,params = {},headers="") => {
     try {
+      const header = headers
       const response = await axios.get(`${BASE_URL}${endpoint}`, {
         params,
         headers: {
           Authorization: `Bearer ${token}`,
+          headers
         },
       });
 
@@ -20,11 +22,13 @@ const RequestHandler = {
     }
   },
 
-  post: async (endpoint, token, data = {}) => {
+  post: async (endpoint, token, data = {},headers="") => {
     try {
+      const header = headers
       const response = await axios.post(`${BASE_URL}${endpoint}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
+          header
         },
       });
 
@@ -34,11 +38,14 @@ const RequestHandler = {
       throw error;
     }
   },
-  put: async (endpoint, data, token) => {
+  put: async (endpoint, data, token,headers="") => {
+
     try {
+      const header = headers
       const response = await axios.put(`${BASE_URL}${endpoint}`, data, {
-        headers: {
+        headers:  {
           Authorization: `Bearer ${token}`,
+          header
         },
       });
 
