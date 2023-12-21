@@ -107,7 +107,7 @@ export default function ProjectOverview({ projectUuid }) {
                 </section>
                 <section className="flex basis-5/12">
                     <div className="flex flex-col">
-                        <div className="flex-grow">TUTAJ BEDZIE POWIADOMIENEI O WYDARZENIU CYZ COS</div>
+                        {/* <div className="flex-grow">TUTAJ BEDZIE POWIADOMIENEI O WYDARZENIU CYZ COS</div> */}
                         {projectData.isPrivate ?
                             <div className="flex flex-row ml-auto">
                                 <Typography variant="paragraph">Prywatny</Typography>

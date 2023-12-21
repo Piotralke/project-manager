@@ -46,6 +46,7 @@ const LoginPage = () => {
             // Tutaj możesz dodać kod obsługujący błąd logowania
         }
     };
+   
 
     const handleRegistrationSubmit = async (e) => {
         e.preventDefault();

@@ -4,55 +4,78 @@ import { useParams } from "react-router-dom";
 import { FaFile } from "react-icons/fa";
 import { useAuth } from '../auth';
 import RequestHandler from '../Miscs/RequestHandler';
-export default function Message({messageData}) {
+export default function Message({ messageData }) {
     const { projectId } = useParams();
     const [open, setOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [userPic,setUserPic] = useState();
+    const [userPic, setUserPic] = useState();
     const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
-    const [isLoading,setLoading] = useState(true)
+    const [isLoading, setLoading] = useState(true)
     const auth = useAuth();
-    const [userMessage,isUserMessage] = useState(false)
-    const[attachmentInfo,setAttachmentInfo]=useState([]);
-    const fetchUserPic = async () =>{
+    const [userMessage, isUserMessage] = useState(false)
+    const [attachmentInfo, setAttachmentInfo] = useState([]);
+    const fetchUserPic = async () => {
         const u = await auth.getUser();
         console.log(u)
-        if(messageData.senderUuid === u.uuid)
+        if (messageData.senderUuid === u.uuid)
             isUserMessage(true)
         const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${messageData.senderUuid}`, auth.getToken());
         setUserPic(pic);
         setLoading(false)
     }
-    const fetchPicsData = async () =>{
+    const fetchPicsData = async () => {
         console.log(messageData.messageAttachments)
-        
-        messageData.messageAttachments.map(async (attachment)=> {
+
+        messageData.messageAttachments.map(async (attachment) => {
             console.log(attachment)
-            const response = await RequestHandler.get(`/api/chat/GetAttachmentContext`,auth.getToken(),attachment)
-            setAttachmentInfo([...attachmentInfo,response])
+
+            const response = await RequestHandler.get(`/api/chat/GetAttachmentContext/${attachment.uuid}`, auth.getToken())
+            setAttachmentInfo([...attachmentInfo, response])
         })
     }
-    useEffect(()=>{ 
-        
+    useEffect(() => {
+
         setMessage(messageData)
         fetchUserPic()
         fetchPicsData()
-        
-    },[messageData])
+
+    }, [messageData])
     const [message, setMessage] = useState();
 
-    const attachmentContainerClass = () => {
-        const attachmentCount = message.messageAttachments.length;
-
-        if (attachmentCount === 1) {
-            return "col-span-full";
-        } else {
-            return "col-span-1";
-        }
-    };
-
-    function downloadFile(filePath) {
-        console.log("pobieranie pliku");
+    async function downloadFile(attachment) {
+        try {
+            const response = await RequestHandler.get(`/api/chat/DownloadAttachment/${attachment.uuid}`, auth.getToken());
+        
+            // Sprawdź, czy odpowiedź jest poprawna
+            if (!response.ok) {
+              throw new Error(`Błąd pobierania pliku: ${response.statusText}`);
+            }
+        
+            // Utwórz link do pobrania pliku
+            const downloadLink = document.createElement('a');
+        
+            // Ustaw nazwę pliku na podstawie odpowiedzi serwera
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.*)"/);
+            const fileName = fileNameMatch ? fileNameMatch[1] : 'file';
+        
+            // Spróbuj użyć metody blob() na obiekcie Response
+            const blob = response.blob ? await response.blob() : new Blob([await response.arrayBuffer()]);
+        
+            // Ustaw właściwość href linku na utworzone URL dla Blob
+            downloadLink.href = window.URL.createObjectURL(blob);
+        
+            downloadLink.download = fileName;
+        
+            // Dodaj link do dokumentu i kliknij w niego, aby rozpocząć pobieranie
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+        
+            // Usuń link po pobraniu
+            document.body.removeChild(downloadLink);
+          } catch (error) {
+            console.error('Wystąpił błąd:', error);
+          }
     }
 
     function isImageFile(fileType) {
@@ -76,17 +99,17 @@ export default function Message({messageData}) {
             setImageSize({ width: image.width, height: image.height });
         };
     }, [selectedImage]);
-    if(isLoading)
-    return(
-        <Spinner color="amber"></Spinner>
-    )
+    if (isLoading)
+        return (
+            <Spinner color="amber"></Spinner>
+        )
     return (
         <div className="flex flex-row">
-            {userMessage? null :<Avatar className="mt-auto" src={`data:image/jpeg;base64,${userPic}`}></Avatar> }
-            
-            <div className={`flex flex-col p-1 mt-auto space-y-1 text-left ${userMessage ? "ml-auto": null}`}>
-                {userMessage? null:<Typography variant="small">{message?.sender?.name} {message?.sender?.surname}</Typography>}
-                <div className={`p-2 ${userMessage? "bg-amber-300" : "bg-gray-300"} rounded-xl`}>
+            {userMessage ? null : <Avatar className="mt-auto" src={`data:image/jpeg;base64,${userPic}`}></Avatar>}
+
+            <div className={`flex flex-col p-1 mt-auto space-y-1 text-left ${userMessage ? "ml-auto" : null}`}>
+                {userMessage ? null : <Typography variant="small">{message?.sender?.name} {message?.sender?.surname}</Typography>}
+                <div className={`p-2 ${userMessage ? "bg-amber-300 ml-auto" : "bg-gray-300 mr-auto"} rounded-xl`}>
                     <Typography variant="small">{message?.content}</Typography>
                 </div>
                 {message?.hasAttachment ?
@@ -97,12 +120,12 @@ export default function Message({messageData}) {
                                     key={index}
                                     src={`data:image/jpeg;base64,${attachmentInfo[index]}`}
                                     alt={`${attachment.fileName}${attachment.fileType}`}
-                                    className={`${attachmentContainerClass()} h-full rounded-xl cursor-pointer object-cover`}
-                                    onClick={() => handleClickImage(attachment.filePath)}
+                                    className={`${userMessage ? "col-start-3" : null} col-span-1 h-full rounded-xl cursor-pointer object-cover `}
+                                    onClick={() => handleClickImage(attachmentInfo[index])}
                                 />
                                 :
-                                <div key={index} className={`rounded-xl bg-gray-300 p-2  ${attachmentContainerClass()}`}>
-                                    <div className="flex flex-row items-center col-span-1 hover:cursor-pointer" onClick={() => downloadFile(attachment.filePath)}>
+                                <div key={index} className={`rounded-xl bg-gray-300 p-2  col-span-1 ${userMessage ? "col-start-3" : null}`}>
+                                    <div className="flex flex-row items-center col-span-1 hover:cursor-pointer" onClick={() => downloadFile(attachment)}>
                                         <FaFile className="w-8 h-8"></FaFile>
                                         <Typography variant="small" className="ml-1 font-bold">{attachment.fileName}{attachment.fileType}</Typography>
                                     </div>
@@ -112,7 +135,7 @@ export default function Message({messageData}) {
                     : null}
             </div>
             <Dialog size="xl" open={open} handler={() => setOpen(!open)} onClick={handleClose} onClose={handleClose} className={`flex content-center bg-transparent items-center justify-center shadow-none`}>
-                <img src={selectedImage} alt="Preview" className={`flex w-[${imageSize.width}] h-[${imageSize.height}] self-center`} onClick={handleClose} />
+                <img src={`data:image/jpeg;base64,${selectedImage}`} alt="Preview" className={`flex w-[${imageSize.width/2}] h-[${imageSize.height}/2] self-center`} onClick={handleClose} />
             </Dialog>
         </div>
     );

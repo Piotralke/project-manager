@@ -21,7 +21,23 @@ const RequestHandler = {
       throw error;
     }
   },
+  getResponse: async (endpoint, token,params = {},headers="") => {
+    try {
+      const header = headers
+      const response = await axios.get(`${BASE_URL}${endpoint}`, {
+        params,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          headers
+        },
+      });
 
+      return response
+    } catch (error) {
+      handleRequestError(error);
+      throw error;
+    }
+  },
   post: async (endpoint, token, data = {},headers="") => {
     try {
       const header = headers

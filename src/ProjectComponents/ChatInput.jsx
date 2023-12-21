@@ -45,6 +45,7 @@ export default function ChatInput() {
       formData,
       // {"Content-Type": "multipart/form-data",Authorization: `Bearer ${auth.getToken()}`}
     );
+    location.reload()
   };
   const isButtonDisabled = !message && attachments.length === 0;
   return (
