@@ -34,7 +34,8 @@ export default function ProjectMainPage() {
             </Card>
             
             <Card className="col-span-full lg:col-span-1 row-span-2">
-                <NewestMessage></NewestMessage>
+                {/* <NewestMessage></NewestMessage> */}
+                <Typography className="self-center">PLACEHOLDER</Typography>
             </Card>
             
             <Card className="col-span-full lg:col-span-1 row-span-3">

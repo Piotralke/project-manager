@@ -26,6 +26,8 @@ export default function ProjectMembers() {
             }
             await RequestHandler.post(`/api/projects/AddProjectMember`,auth.getToken(),data)
         });
+
+        location.reload()
     }
     const handleMemberDialogOpen = () => {
         isAddMemberDialogOpen(true);

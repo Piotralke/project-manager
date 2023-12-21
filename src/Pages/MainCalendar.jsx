@@ -69,6 +69,7 @@ export default function MainCalendar() {
     console.log(data)
     const response = await RequestHandler.post(`/api/projects/AddProjectEvent`, auth.getToken(), data)
     console.log(response);
+    location.reload()
 
   };
   const handleTitleChange = (value) => {

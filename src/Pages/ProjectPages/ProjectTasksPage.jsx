@@ -34,7 +34,7 @@ export default function ProjectTasksPage() {
         <div className="grid w-full h-screen grid-cols-1 lg:grid-cols-3 gap-5 p-5 bg-gray-300 lg:grid-rows-8 grid-rows ">
             <ProjectHeader></ProjectHeader>
             <section className="col-span-full row-span-1 flex flex-row space-x-3 items-center">
-                <Button color="amber">Dodaj nowe zadanie</Button>
+                {/* <Button color="amber">Dodaj nowe zadanie</Button> */}
                 <Checkbox checked={onlyUser} onChange={()=>{isOnlyUser(prev=>!prev)}} color="amber" label="Wyświetl tylko zadania przypisane do mnie"></Checkbox>
             </section>
             <Card className="col-span-full lg:col-span-1 row-span-6">
