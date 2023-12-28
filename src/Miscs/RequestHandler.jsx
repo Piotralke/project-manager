@@ -25,6 +25,7 @@ const RequestHandler = {
     try {
       const header = headers
       const response = await axios.get(`${BASE_URL}${endpoint}`, {
+        responseType: 'blob',
         params,
         headers: {
           Authorization: `Bearer ${token}`,

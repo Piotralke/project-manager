@@ -44,38 +44,26 @@ export default function Message({ messageData }) {
 
     async function downloadFile(attachment) {
         try {
-            const response = await RequestHandler.get(`/api/chat/DownloadAttachment/${attachment.uuid}`, auth.getToken());
-        
-            // Sprawdź, czy odpowiedź jest poprawna
-            if (!response.ok) {
-              throw new Error(`Błąd pobierania pliku: ${response.statusText}`);
-            }
-        
-            // Utwórz link do pobrania pliku
+            const response = await RequestHandler.getResponse(`/api/chat/DownloadAttachment/${attachment.uuid}`, auth.getToken());
             const downloadLink = document.createElement('a');
-        
-            // Ustaw nazwę pliku na podstawie odpowiedzi serwera
-            const contentDisposition = response.headers.get('Content-Disposition');
+            downloadLink.href = window.URL.createObjectURL(new Blob([response.data]));
+            console.log(response)
+            // Ustaw nazwę pliku na podstawie nagłówka Content-Disposition (jeśli dostępny)
+            const contentDisposition = response.headers['content-disposition'];
             const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.*)"/);
             const fileName = fileNameMatch ? fileNameMatch[1] : 'file';
-        
-            // Spróbuj użyć metody blob() na obiekcie Response
-            const blob = response.blob ? await response.blob() : new Blob([await response.arrayBuffer()]);
-        
-            // Ustaw właściwość href linku na utworzone URL dla Blob
-            downloadLink.href = window.URL.createObjectURL(blob);
-        
-            downloadLink.download = fileName;
-        
+
+            downloadLink.download = attachment.fileName + attachment.fileType;
+
             // Dodaj link do dokumentu i kliknij w niego, aby rozpocząć pobieranie
             document.body.appendChild(downloadLink);
             downloadLink.click();
-        
+
             // Usuń link po pobraniu
             document.body.removeChild(downloadLink);
-          } catch (error) {
+        } catch (error) {
             console.error('Wystąpił błąd:', error);
-          }
+        }
     }
 
     function isImageFile(fileType) {
@@ -120,7 +108,7 @@ export default function Message({ messageData }) {
                                     key={index}
                                     src={`data:image/jpeg;base64,${attachmentInfo[index]}`}
                                     alt={`${attachment.fileName}${attachment.fileType}`}
-                                    className={`${userMessage ? "col-start-3" : null} col-span-1 h-full rounded-xl cursor-pointer object-cover `}
+                                    className={`${userMessage ? "col-start-3" : null} col-span-1 h-full rounded-xl cursor-pointer border rounded-xl object-cover `}
                                     onClick={() => handleClickImage(attachmentInfo[index])}
                                 />
                                 :
@@ -135,7 +123,7 @@ export default function Message({ messageData }) {
                     : null}
             </div>
             <Dialog size="xl" open={open} handler={() => setOpen(!open)} onClick={handleClose} onClose={handleClose} className={`flex content-center bg-transparent items-center justify-center shadow-none`}>
-                <img src={`data:image/jpeg;base64,${selectedImage}`} alt="Preview" className={`flex w-[${imageSize.width/2}] h-[${imageSize.height}/2] self-center`} onClick={handleClose} />
+                <img src={`data:image/jpeg;base64,${selectedImage}`} alt="Preview" className={`flex w-[${imageSize.width / 2}] h-[${imageSize.height}/2] self-center`} onClick={handleClose} />
             </Dialog>
         </div>
     );
