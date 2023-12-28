@@ -50,7 +50,7 @@ export default function ChatInput() {
   const isButtonDisabled = !message && attachments.length === 0;
   return (
     <form onSubmit={(e)=>{sendMessage(e)}} enctype="multipart/form-data">
-      <div className="flex flex-row mt-auto w-full p-1 space-x-2">
+      <div className="flex flex-row w-full p-1 mt-auto space-x-2 ">
         <label htmlFor="fileInput" className="cursor-pointer">
           <TiAttachment className="w-10 h-10"></TiAttachment>
           <input

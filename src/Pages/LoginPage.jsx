@@ -61,11 +61,12 @@ const LoginPage = () => {
             console.error("Registration error:", error.response.data);
             // Tutaj możesz dodać kod obsługujący błąd rejestracji
         }
+        location.reload()
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="max-w-md w-full p-6 space-y-6 bg-white rounded-md shadow-lg">
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+            <div className="w-full max-w-md p-6 space-y-6 bg-white rounded-md shadow-lg">
                 <h1 className="text-2xl font-bold text-center">
                     {isLoginForm ? "Logowanie" : "Rejestracja"}
                 </h1>
@@ -79,7 +80,7 @@ const LoginPage = () => {
                                     name="Email"
                                     value={loginData.Email}
                                     onChange={handleLoginChange}
-                                    className="mt-1 p-2 w-full border rounded-md"
+                                    className="w-full p-2 mt-1 border rounded-md"
                                 />
                             </div>
                             <div>
@@ -89,7 +90,7 @@ const LoginPage = () => {
                                     name="Password"
                                     value={loginData.Password}
                                     onChange={handleLoginChange}
-                                    className="mt-1 p-2 w-full border rounded-md"
+                                    className="w-full p-2 mt-1 border rounded-md"
                                 />
                             </div>
                         </>
@@ -102,7 +103,7 @@ const LoginPage = () => {
                                     name="name"
                                     value={registrationData.name}
                                     onChange={handleRegistrationChange}
-                                    className="mt-1 p-2 w-full border rounded-md"
+                                    className="w-full p-2 mt-1 border rounded-md"
                                 />
                             </div>
                             <div>
@@ -112,7 +113,7 @@ const LoginPage = () => {
                                     name="surname"
                                     value={registrationData.surname}
                                     onChange={handleRegistrationChange}
-                                    className="mt-1 p-2 w-full border rounded-md"
+                                    className="w-full p-2 mt-1 border rounded-md"
                                 />
                             </div>
                             <div>
@@ -122,7 +123,7 @@ const LoginPage = () => {
                                     name="email"
                                     value={registrationData.email}
                                     onChange={handleRegistrationChange}
-                                    className="mt-1 p-2 w-full border rounded-md"
+                                    className="w-full p-2 mt-1 border rounded-md"
                                 />
                             </div>
                             <div>
@@ -132,7 +133,7 @@ const LoginPage = () => {
                                     name="password"
                                     value={registrationData.password}
                                     onChange={handleRegistrationChange}
-                                    className="mt-1 p-2 w-full border rounded-md"
+                                    className="w-full p-2 mt-1 border rounded-md"
                                 />
                             </div>
                             <div>
@@ -142,7 +143,7 @@ const LoginPage = () => {
                                     name="confirmPassword"
                                     value={registrationData.confirmPassword}
                                     onChange={handleRegistrationChange}
-                                    className="mt-1 p-2 w-full border rounded-md"
+                                    className="w-full p-2 mt-1 border rounded-md"
                                 />
                             </div>
                         </>

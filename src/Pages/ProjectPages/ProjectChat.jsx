@@ -28,7 +28,7 @@ export default function ProjectChat() {
             <ProjectHeader></ProjectHeader>
             <Card className="col-span-full row-span-7">
                 <CardBody className="h-full p-2 bg-white rounded-xl">
-                    <div className="h-full flex flex-col">
+                    <div className="flex flex-col h-full">
                         {projectMessages.length>0 ?
                         (<div className="overflow-y-auto flex flex-col max-h-[94%]">
                         {projectMessages.map((message,index)=>{
@@ -44,7 +44,7 @@ export default function ProjectChat() {
                             <div className="overflow-y-auto flex flex-col flex-grow max-h-[94%]"></div>
                         )
                         }
-                        
+                        <div className="flex-grow"></div>
                         <ChatInput></ChatInput>
                     </div>
                 </CardBody>
