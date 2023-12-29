@@ -15,6 +15,7 @@ import { QueryClientProvider, QueryClient } from "react-query";
 import LoginPage from "./Pages/LoginPage";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./auth";
+import ProjectGanntPage from "./Pages/ProjectPages/ProjectGanntPage";
 
 
 function AppRoutes() {
@@ -50,6 +51,7 @@ function AppRoutes() {
         <Route path="/projects/:projectId/tasks" element={<ProjectTasksPage></ProjectTasksPage>}></Route>
         <Route path="/projects/:projectId/chat" element={<ProjectChat></ProjectChat>}></Route>
         <Route path="/projects/:projectId/calendar" element={<MainCalendar></MainCalendar>}></Route>
+        <Route path="/projects/:projectId/gannt" element={<ProjectGanntPage></ProjectGanntPage>}></Route>
       </Route>
       <Route path="/login" element={<LoginPage></LoginPage>}></Route>
     </Routes>

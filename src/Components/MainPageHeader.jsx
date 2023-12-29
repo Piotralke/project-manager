@@ -8,7 +8,7 @@ export default function MainPageHeader() {
     const [userData, setUserData] = useState({});
     const [userPic,setUserPic] = useState();
     const auth = useAuth();
-
+  
     useEffect(() => {
         const fetchUser = async () => {
             const user = await auth.getUser()
