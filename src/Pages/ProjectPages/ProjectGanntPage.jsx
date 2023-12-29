@@ -1,10 +1,27 @@
-import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Radio,Input,Textarea,Option, Typography, Checkbox, Select } from "@material-tailwind/react";
+import { Button, 
+  Dialog, 
+  DialogBody, 
+  DialogFooter, 
+  DialogHeader, 
+  Radio, 
+  Input, 
+  Textarea, 
+  Option, 
+  Typography, 
+  Checkbox, 
+  Select, 
+  Spinner,
+  Card,
+List, ListItem, ListItemSuffix } from "@material-tailwind/react";
 import { Gantt } from 'gantt-task-react';
 import "gantt-task-react/dist/index.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProjectHeader from "../../Components/ProjectHeader";
 import ReactDatePicker from "react-datepicker";
 import { useParams } from "react-router-dom";
+import { useAuth } from "../../auth";
+import RequestHandler from "../../Miscs/RequestHandler";
+import ReactPaginate from "react-paginate";
 export default function ProjectGanntPage() {
   const [type, setType] = useState("Day")
   const [dialog, openDialog] = useState(false);
@@ -12,9 +29,29 @@ export default function ProjectGanntPage() {
   const [desc, setDesc] = useState();
   const [startDate, setStartDate] = useState();
   const [end, setEndDate] = useState();
-  const {projectId} = useParams()
-  const [projectTasks,setProjectTasks] = useState([])
-  const [selectedType,setSelectedType] = useState();
+  const { projectId } = useParams()
+  const [projectTasks, setProjectTasks] = useState([])
+  const [selectedType, setSelectedType] = useState();
+  const [loading, setLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTasks,setSelectedTasks] = useState([])
+  const auth = useAuth()
+  const ITEMS_PER_PAGE = 3;
+
+  const handleTaskSelection = (taskId) => {
+    const isSelected = selectedTasks.includes(taskId);
+    if(isSelected){
+      setSelectedTasks((prev)=>prev.filter((id)=>id!==taskId))
+    }
+    else{
+      setSelectedTasks((prev)=>[...prev,taskId])
+    }
+  };
+
+  const handleCheckboxChange = (taskId) => {
+    handleTaskSelection(taskId);
+  };
   const handleDialogClose = () => {
     openDialog(false);
     resetForm();
@@ -22,9 +59,19 @@ export default function ProjectGanntPage() {
   const handlekDialogOpen = () => {
     openDialog(true);
   };
-  const handleSubmit = (e) =>{
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const data = {
+      title: title,
+      description: desc,
+      startDate: startDate,
+      endDate: end,
+      projectUuid: projectId,
+      type: selectedType,
+      previousTasksGuids: selectedTasks
+    }
+    const response = await RequestHandler.post(`/api/projects/AddGanttTask`, auth.getToken(), data)
+    location.reload()
   }
   const handleTitleChange = (value) => {
     setTitle(value);
@@ -32,35 +79,23 @@ export default function ProjectGanntPage() {
   const handleDescriptionChange = (value) => {
     setDesc(value);
   };
- 
-  const sampleTasks = [
-    {
-      start: new Date(2020, 1, 1),
-      end: new Date(2020, 1, 2),
-      name: 'Idea',
-      id: 'Task 0',
-      type: 'task',
-      progress: 100,
-      description: 'chuj dupa',
-      styles: { progressColor: '#ffbb54', progressSelectedColor: '#ff9e0d' },
-      dependencies: [], // Zadanie 0 poprzedza Zadanie 1
-    },
-    {
-      start: new Date(2020, 1, 3),
-      end: new Date(2020, 1, 4),
-      name: 'Task 1',
-      id: 'Task 1',
-      type: 'task',
-      progress: 100,
-      description: 'chuj dupa',
-      styles: { progressColor: '#ffbb54', progressSelectedColor: '#ff9e0d' },
-      dependencies: ["Task 0"], // Zadanie 1 nie ma poprzedników
-    },
+  const fetchData = async () => {
+    const response = await RequestHandler.get(`/api/projects/GetProjectGanttTasks/${projectId}`, auth.getToken())
+    console.log(response)
+    response.map(task => {
+      task.start = new Date(task.start);
+      task.end = new Date(task.end);
+    })
+    setProjectTasks(response)
+    setLoading(false)
+  }
+  useEffect(() => {
+    fetchData()
+  }, [])
 
-
-    // Dodaj inne zadania w podobny sposób
-  ];
-
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
   function Tooltip({ task }) {
     return (
       <div>
@@ -68,6 +103,13 @@ export default function ProjectGanntPage() {
       </div>
     )
   }
+  if (loading) {
+    return (
+      <Spinner></Spinner>
+    )
+  }
+  const offset = currentPage * ITEMS_PER_PAGE;
+  const currentPageTasks = projectTasks.slice(offset, offset + ITEMS_PER_PAGE);
   return (
     <div className="grid w-full h-full grid-cols-1 gap-5 p-5 bg-gray-300 lg:grid-cols-5 lg:grid-rows-8 grid-rows ">
       <ProjectHeader></ProjectHeader>
@@ -80,64 +122,107 @@ export default function ProjectGanntPage() {
         <Radio name="type" color="amber" label="Miesęczny" onChange={() => setType("Month")}></Radio>
       </section>
       <div className="col-span-full row-span-6 w-full h-full">
-        <Gantt columnWidth={200} ganttHeight={500} listCellWidth={""} TooltipContent={Tooltip} className="w-full h-full" tasks={sampleTasks} viewMode={type}></Gantt>
+        <Gantt columnWidth={200} ganttHeight={500} listCellWidth={""} TooltipContent={Tooltip} className="w-full h-full" tasks={projectTasks} viewMode={type}></Gantt>
       </div>
       <Dialog open={dialog}>
-        <form onSubmit={(e)=>{handleSubmit(e)}}>
+        <form onSubmit={(e) => { handleSubmit(e) }}>
           <DialogHeader>
             <Typography>Dodaj zadanie gantt'a!</Typography>
           </DialogHeader>
           <DialogBody>
-          <div className="flex flex-row space-x-2 w-full">
-            <div className="flex flex-row">
-            <div className="flex flex-col flex-grow space-y-3">
-                <Input
-                  label="Tytuł"
-                  variant="outlined"
-                  margin="normal"
-                  color="amber"
-                  onChange={(e) => handleTitleChange(e.target.value)}
-                />
-                <Textarea
-                  label="Opis"
-                  color="amber"
-                  variant="outlined"
-                  margin="normal"
-                  rows={4}
-                  onChange={(e) => handleDescriptionChange(e.target.value)}
-                />
-                <Select label="Wybierz typ" color="amber" onChange={(e) =>  {setSelectedType(e)}} >
-                  <Option key="task" value="task">Zadanie</Option>
-                  <Option key="milestone" value="milestone">Kamień milowy</Option>
-                </Select>
-                
-                <div className="flex flex-row place-content-evenly">
-                <div className="flex flex-col">
-                
-                <Typography variant="h6">Data {selectedType=="milestone"? "" :"rozpoczęcia"}</Typography>
-                <ReactDatePicker
-                  className="p-2 border border-black rounded-md"
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
-                  closeOnScroll={true}
-                />
-                </div>
-                <div className="flex flex-col">
-            
-                <Typography variant="h6" className={`${selectedType=="milestone" ?"text-gray-400 cursor-default" : null}`} >Data zakończenia</Typography>
-                <ReactDatePicker
-                disabled = {selectedType=="milestone"}
-                  className="p-2 border border-black rounded-md"
-                  selected={end}
-                  onChange={(date) => setEndDate(date)}
-                  closeOnScroll={true}
-                />
-                </div>
+            <div className="flex flex-row space-x-2 w-full">
+              <div className="flex flex-row">
+                <div className="flex flex-col flex-grow space-y-3">
+                  <Input
+                    label="Tytuł"
+                    variant="outlined"
+                    margin="normal"
+                    color="amber"
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                  />
+                  <Textarea
+                    label="Opis"
+                    color="amber"
+                    variant="outlined"
+                    margin="normal"
+                    rows={4}
+                    onChange={(e) => handleDescriptionChange(e.target.value)}
+                  />
+                  <Select label="Wybierz typ" color="amber" onChange={(e) => { setSelectedType(e) }} >
+                    <Option key="task" value="task">Zadanie</Option>
+                    <Option key="milestone" value="milestone">Kamień milowy</Option>
+                  </Select>
+
+                  <div className="flex flex-row place-content-evenly">
+                    <div className="flex flex-col">
+
+                      <Typography variant="h6">Data {selectedType == "milestone" ? "" : "rozpoczęcia"}</Typography>
+                      <ReactDatePicker
+                        className="p-2 border border-black rounded-md"
+                        selected={startDate}
+                        onChange={(date) => setStartDate(date)}
+                        closeOnScroll={true}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+
+                      <Typography variant="h6" className={`${selectedType == "milestone" ? "text-gray-400 cursor-default" : null}`} >Data zakończenia</Typography>
+                      <ReactDatePicker
+                        disabled={selectedType == "milestone"}
+                        className="p-2 border border-black rounded-md"
+                        selected={end}
+                        onChange={(date) => setEndDate(date)}
+                        closeOnScroll={true}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
               <div className="flex flex-col">
                 <Checkbox color="amber" label="Zawiera poprzedzające zadanie?"></Checkbox>
+                <Card>
+                  <List>
+                    {currentPageTasks.map((task) => (
+                      <ListItem
+                        key={task.id}
+                        value={task.id}
+                        onClick={() => handleTaskSelection(task.id)}
+                        className={
+                          // Add styling for selected tasks
+                          // You can conditionally apply styles based on task selection
+                          task.isSelected ? "font-bold p-1" : "p-1"
+                        }
+                      >
+                        {task.name}
+                        <ListItemSuffix>
+                          <Checkbox
+                            color="amber"
+                            checked={task.isSelected}
+                            onChange={() => handleCheckboxChange(task.id)}
+                          ></Checkbox>
+                        </ListItemSuffix>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Card>
+                <div className="flex flex-row">
+                  {projectTasks.length > ITEMS_PER_PAGE && (
+                    <ReactPaginate
+                      className="flex flex-row justify-evenly w-full"
+                      previousLabel={"poprzednia"}
+                      nextLabel={"następna"}
+                      breakLabel={""}
+                      pageCount={Math.ceil(projectTasks.length / ITEMS_PER_PAGE)}
+                      marginPagesDisplayed={2}
+                      pageRangeDisplayed={5}
+                      onPageChange={handlePageChange}
+                      containerClassName={"pagination"}
+                      subContainerClassName={"pages pagination"}
+                      activeClassName={"active"}
+                    />
+                  )}
+                </div>
+
               </div>
             </div>
           </DialogBody>
