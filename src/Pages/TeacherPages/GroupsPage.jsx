@@ -1,5 +1,5 @@
 export default function GroupsPage(){
     return(
-        <div></div>
+        <div>cipeczkiiii</div>
     )
 }

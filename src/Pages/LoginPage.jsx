@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "../auth";
 import { Navigate, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 const LoginPage = () => {
     const [loginData, setLoginData] = useState({ Email: "", Password: "" });
     const [registrationData, setRegistrationData] = useState({
@@ -40,7 +41,11 @@ const LoginPage = () => {
             const response = await axios.post("http://localhost:5048/api/users/login", loginData);
             console.log("Login response:", response.data);
             await auth.setToken(response.data.token);
-            navigate("/home");
+            const info = jwtDecode(response.data.token)
+            if(info.role == "STUDENT")
+                 navigate("/home");
+            else
+                navigate("/thome")
         } catch (error) {
             console.error("Login error:", error.response.data);
             // Tutaj możesz dodać kod obsługujący błąd logowania

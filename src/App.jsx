@@ -16,6 +16,8 @@ import LoginPage from "./Pages/LoginPage";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./auth";
 import ProjectGanntPage from "./Pages/ProjectPages/ProjectGanntPage";
+import GroupsPage from "./Pages/TeacherPages/GroupsPage";
+import TeacherHomePage from "./Pages/TeacherPages/TeacherHomePage";
 
 
 function AppRoutes() {
@@ -52,6 +54,7 @@ function AppRoutes() {
         <Route path="/projects/:projectId/chat" element={<ProjectChat></ProjectChat>}></Route>
         <Route path="/projects/:projectId/calendar" element={<MainCalendar></MainCalendar>}></Route>
         <Route path="/projects/:projectId/gannt" element={<ProjectGanntPage></ProjectGanntPage>}></Route>
+        <Route path="/thome" element={<TeacherHomePage></TeacherHomePage>}></Route>
       </Route>
       <Route path="/login" element={<LoginPage></LoginPage>}></Route>
     </Routes>
