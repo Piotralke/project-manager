@@ -89,7 +89,7 @@ export default function Message({ messageData }) {
     }, [selectedImage]);
     if (isLoading)
         return (
-            <Spinner color="amber"></Spinner>
+            null
         )
     return (
         <div className="flex flex-row">

@@ -10,7 +10,6 @@ export default function Projects() {
     const [openDialog, setOpenDialog] = useState(false);
     const [title, setTitle] = useState();
     const [desc, setDesc] = useState();
-    const [isPrivate, setIsPrivate] = useState(false);
     const [projects, setProjects] = useState();
     
     const auth = useAuth()
@@ -30,9 +29,6 @@ export default function Projects() {
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
-    const handleCheckboxChange = (checked) => {
-        setIsPrivate(checked);
-    };
     const handleSubmit = async (e) => {
         e.preventDefault()
         const user = await auth.getUser()
@@ -41,7 +37,7 @@ export default function Projects() {
             description: desc,
             ownerUuid: user.uuid,
             members: [],    //dorobienie listy członków
-            isPrivate: isPrivate
+            isPrivate: true
         }
         const response = await RequestHandler.post("/api/projects", auth.getToken(), payload)
         console.log(response)
@@ -96,10 +92,6 @@ export default function Projects() {
                                 rows={4}
                                 onChange={(e) => handleDescriptionChange(e.target.value)}
                             />
-
-                            <Checkbox color='amber' label="Projekt prywatny" checked={isPrivate}
-                                onChange={(e) => handleCheckboxChange(e.target.checked)}>
-                            </Checkbox>
                             {/* Pozostałe pola formularza (lista użytkowników, czy projekt jest prywatny) */}
                         </div>
                     </DialogBody>

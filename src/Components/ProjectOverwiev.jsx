@@ -1,29 +1,21 @@
 import { useEffect, useState } from "react";
-import { AiOutlineSnippets } from "react-icons/ai";
 import { Avatar, Spinner, Tooltip, Typography } from "@material-tailwind/react";
 import { FaArrowRight, FaRegEyeSlash } from "react-icons/fa";
-import { FaEarthAfrica } from "react-icons/fa6";
+import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import RequestHandler from "../Miscs/RequestHandler";
 import { useAuth } from "../auth";
-export default function ProjectOverview({ projectUuid }) {
+import { BsFillPinFill } from "react-icons/bs";
+import { MdGroup } from "react-icons/md";
+export default function ProjectOverview({ isPinned, projectUuid }) {
     const auth = useAuth();
     const [loading, isLoading] = useState(true)
     const [projectMembers, setProjectMembers] = useState([])
-    const [projectData, setProjectData] = useState(
-        //     {
-        //     uuid: "123-321-123",
-        //     title: "Project-Manager",
-        //     description: "System do zarządzania projektami studenckimi",
-        //     status: "STARTED",
-        //     createdAt: "2023-10-26 15:16:40.942694+02",
-        //     isPrivate: false,
-        // }
-    );
+    const [projectData, setProjectData] = useState();
     const fetchPics = async (members) => {
         const promises = members.map(async (member) => {
             const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${member.uuid}`, auth.getToken());
-            const result = {...member,pic}
+            const result = { ...member, pic }
             return result;
         });
 
@@ -40,6 +32,9 @@ export default function ProjectOverview({ projectUuid }) {
 
         }
 
+    }
+    const pinProject = async () => {
+        const response = await RequestHandler.put(`/api/users/PinProject/${projectUuid}`, null, auth.getToken())
     }
     useEffect(() => {
         fetchProject().catch(console.error)
@@ -105,22 +100,26 @@ export default function ProjectOverview({ projectUuid }) {
                         </div>
                     </div>
                 </section>
-                <section className="flex basis-5/12">
+                <section className="flex basis-4/12">
                     <div className="flex flex-col">
                         {/* <div className="flex-grow">TUTAJ BEDZIE POWIADOMIENEI O WYDARZENIU CYZ COS</div> */}
                         {projectData.isPrivate ?
                             <div className="flex flex-row ml-auto">
-                                <Typography variant="paragraph">Prywatny</Typography>
-                                <FaRegEyeSlash className="w-5 h-5"></FaRegEyeSlash>
+                                <Typography variant="paragraph">Osobisty</Typography>
+                                <FaUser className="w-5 h-5"></FaUser>
                             </div>
                             :
                             <div className="flex flex-row ml-auto space-x-2">
-                                <Typography variant="paragraph">Publiczny</Typography>
-                                <FaEarthAfrica className="w-5 h-5"></FaEarthAfrica>
+                                <Typography variant="paragraph">Grupowy</Typography>
+                                <MdGroup className="w-5 h-5"></MdGroup>
                             </div>
                         }
                     </div>
                 </section>
+                {!isPinned ? <div className="flex basis-1/12 items-start justify-start h-full p-3">
+                    <BsFillPinFill onClick={pinProject} className="w-6 h-6 hover:cursor-pointer"></BsFillPinFill>
+                </div> : null}
+
                 <section className="flex items-center justify-center h-full basis-1/12">
                     <Link to={`/projects/${projectData.uuid}`}>
                         <FaArrowRight className="w-10 h-10 m-atuo"></FaArrowRight>

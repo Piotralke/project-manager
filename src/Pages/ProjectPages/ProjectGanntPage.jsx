@@ -82,11 +82,13 @@ export default function ProjectGanntPage() {
   const fetchData = async () => {
     const response = await RequestHandler.get(`/api/projects/GetProjectGanttTasks/${projectId}`, auth.getToken())
     console.log(response)
-    response.map(task => {
-      task.start = new Date(task.start);
-      task.end = new Date(task.end);
-    })
-    setProjectTasks(response)
+    const tasksWithProgress = response.map(task => ({
+      ...task,
+      start: new Date(task.start),
+      end: new Date(task.end),
+      progress: 100, // Default progress value
+    }));
+    setProjectTasks(tasksWithProgress)
     setLoading(false)
   }
   useEffect(() => {
@@ -122,7 +124,7 @@ export default function ProjectGanntPage() {
         <Radio name="type" color="amber" label="Miesęczny" onChange={() => setType("Month")}></Radio>
       </section>
       <div className="col-span-full row-span-6 w-full h-full">
-        <Gantt columnWidth={200} ganttHeight={500} listCellWidth={""} TooltipContent={Tooltip} className="w-full h-full" tasks={projectTasks} viewMode={type}></Gantt>
+        <Gantt  barProgressColor="#FFC107" barProgressSelectedColor="#FFC107" columnWidth={200} ganttHeight={500} listCellWidth={""} TooltipContent={Tooltip} className="w-full h-full" tasks={projectTasks} viewMode={type}></Gantt>
       </div>
       <Dialog open={dialog}>
         <form onSubmit={(e) => { handleSubmit(e) }}>
@@ -178,8 +180,8 @@ export default function ProjectGanntPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col">
-                <Checkbox color="amber" label="Zawiera poprzedzające zadanie?"></Checkbox>
+              <div className="flex flex-col items-center flex-grow">
+                <Typography>Poprzedzające zadania/e</Typography>
                 <Card>
                   <List>
                     {currentPageTasks.map((task) => (

@@ -33,21 +33,18 @@ export default function ProjectMainPage() {
                 <IncomingEvent isEvent={false}></IncomingEvent>
             </Card>
             
-            <Card className="col-span-full lg:col-span-1 row-span-2">
-                {/* <NewestMessage></NewestMessage> */}
-                <Typography className="self-center">PLACEHOLDER</Typography>
+            <Card className="col-span-full lg:col-span-1 row-span-1">
+                <QuickNote></QuickNote>
             </Card>
             
             <Card className="col-span-full lg:col-span-1 row-span-3">
                 <ProjectMembers></ProjectMembers>
             </Card>
             
-            <Card className="col-span-full lg:col-span-2 row-span-2">
+            <Card className="col-span-full lg:col-span-3 row-span-2">
                 <WeeklyCalendar></WeeklyCalendar>
             </Card>
-            <Card className="col-span-full lg:col-span-1 row-span-1">
-                <QuickNote></QuickNote>
-            </Card>
+           
         </div>
     )
 }

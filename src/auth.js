@@ -1,6 +1,7 @@
 // auth.js
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';
 import { setToken as setTokenAction, setUser as setUserAction, removeToken as removeTokenAction } from './Reducers/authReducer';
 const TOKEN_KEY = 'oc5NoAPZL7JjoHWkZVF2xxufqzMtyXcA';
 const COOKIE_EXPIRATION_TIME = 2; // W godzinach
@@ -30,7 +31,15 @@ const getCookie = (name) => {
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) return parts.pop().split(';').shift();
 };
-
+const decodeToken = (token) => {
+  try {
+    const decodedToken = jwtDecode(token);
+    return decodedToken ? decodedToken.role : null;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return null;
+  }
+};
 // Funkcja do ustawiania ciasteczka
 const setCookie = (name, value, hours) => {
   const date = new Date();
@@ -42,7 +51,10 @@ const setCookie = (name, value, hours) => {
 export function useAuth() {
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
-
+  const getRoleFromToken = () => {
+    const token = getToken();
+    return token ? decodeToken(token) : null;
+  };
   const getToken = () => {
     const token = getCookie(TOKEN_KEY)
     if (!token) return null;
@@ -87,5 +99,6 @@ export function useAuth() {
     getUser,
     getToken,
     isAuthenticated,
+    getRoleFromToken
   };
 }

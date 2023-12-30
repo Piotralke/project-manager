@@ -52,7 +52,7 @@ export default function HomePage() {
                         <MdPushPin className="w-6 h-6" />
                         <Typography variant="h6">Przypięty projekt</Typography>
                     </div>
-                    {user? <ProjectOverwiev projectUuid={ user.pinnedProjectUuid} />:null}
+                    {user? <ProjectOverwiev isPinned={true} projectUuid={ user.pinnedProjectUuid} />:null}
                 </CardBody>
             </Card>
             <Card className="row-span-4 col-span-full lg:col-span-2">
