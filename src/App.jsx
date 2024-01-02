@@ -16,8 +16,11 @@ import LoginPage from "./Pages/LoginPage";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./auth";
 import ProjectGanntPage from "./Pages/ProjectPages/ProjectGanntPage";
-import GroupsPage from "./Pages/TeacherPages/GroupsPage";
+
 import TeacherHomePage from "./Pages/TeacherPages/TeacherHomePage";
+import TeacherProposalPage from "./Pages/TeacherPages/TeacherProposalsPage";
+import TeacherSubjectPage from "./Pages/TeacherPages/TeacherSubjectsPage";
+import TeacherGroupsPage from "./Pages/TeacherPages/TeacherGroupsPage";
 
 
 function AppRoutes() {
@@ -55,6 +58,12 @@ function AppRoutes() {
         <Route path="/projects/:projectId/calendar" element={<MainCalendar></MainCalendar>}></Route>
         <Route path="/projects/:projectId/gannt" element={<ProjectGanntPage></ProjectGanntPage>}></Route>
         <Route path="/thome" element={<TeacherHomePage></TeacherHomePage>}></Route>
+        <Route path="/tcalendar" element={<MainCalendar></MainCalendar>}></Route>
+        <Route path="/tsubjects" element={<TeacherSubjectPage></TeacherSubjectPage>}></Route>
+        {/* <Route path="/tsubjects/:subjectId" element={<TeacherSubjectDetails></TeacherSubjectDetails>}></Route> */}
+
+        <Route path="/tgroups" element={<TeacherGroupsPage></TeacherGroupsPage>}></Route>
+        <Route path="/tproposals" element={<TeacherProposalPage></TeacherProposalPage>}></Route>
       </Route>
       <Route path="/login" element={<LoginPage></LoginPage>}></Route>
     </Routes>

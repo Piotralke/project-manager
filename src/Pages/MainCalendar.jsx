@@ -88,6 +88,8 @@ export default function MainCalendar() {
   };
   const fetchProjectMembers = async () => {
 
+   
+      
     const members = await RequestHandler.get(`/api/projects/${selectedProject}/GetProjectMembers`, auth.getToken()) // tu są same id
     setProjectMembers(members);
     console.log(members)

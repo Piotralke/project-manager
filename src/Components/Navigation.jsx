@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-
+import { MdOutlinePlayLesson } from "react-icons/md";
+import { MdGroups } from "react-icons/md";
+import { SlEnvolopeLetter } from "react-icons/sl";
 import {
   BiArrowToRight,
   BiArrowToLeft,
@@ -76,6 +78,52 @@ export default function Navigation() {
       </>
     );
   }
+  function TeacherNavigationContent(){
+    return (
+      <>
+        <NavigationItem
+          icon={IoHome}
+          name="Strona główna"
+          link="/thome"
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960}
+        ></NavigationItem>
+         <NavigationItem
+          icon={SlEnvolopeLetter}
+          name="Propozycje projektowe"
+          link="/tproposals"
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960}
+        ></NavigationItem>
+        <NavigationItem
+          icon={FaCalendarDays}
+          name="Kalendarz"
+          link="/tcalendar"
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960} 
+        ></NavigationItem>
+        <NavigationItem
+          icon={MdOutlinePlayLesson}
+          name="Przedmioty"
+          link="/tsubjects"
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960} 
+        ></NavigationItem>
+        <NavigationItem
+          icon={MdGroups}
+          name="Grupy"
+          link="/tgroups"
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960} 
+        ></NavigationItem>
+      </>
+    );
+  }
   const handleResize = () => {
     if (window.innerWidth < 1140) dispatch(setMenuState(true));
     else dispatch(setMenuState(false));
@@ -84,12 +132,15 @@ export default function Navigation() {
 
   useEffect(() => {
     window.addEventListener("resize", handleResize);
-
+    const teacherRole = (auth.getRoleFromToken() =="TEACHER");
+    if(teacherRole)
+      setIsTeacher(true)
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
   const [open, setOpen] = useState(false);
+  const [isTeacher, setIsTeacher] = useState()
   const auth=useAuth()
   const navigate=useNavigate()
   const openDrawer = () => setOpen(true);
@@ -115,7 +166,8 @@ export default function Navigation() {
           )}
 
           <div className="h-0.5 w-full bg-gray-400"></div>
-          <NavigationContent></NavigationContent>
+          {isTeacher? <TeacherNavigationContent></TeacherNavigationContent>:<NavigationContent></NavigationContent>}
+          
           <div className="flex-grow"></div>
           <Button className="w-full snap-end" color="red" onClick={()=>{auth.removeToken();navigate("/login") }}>Wyloguj</Button>
         </div>
@@ -134,7 +186,8 @@ export default function Navigation() {
               ></BiArrowToLeft>
 
               <div className="h-0.5 w-full bg-gray-400"></div>
-              <NavigationContent></NavigationContent>
+              {isTeacher? <TeacherNavigationContent></TeacherNavigationContent>:<NavigationContent></NavigationContent>}
+          
             </div>
           </Drawer>
         </React.Fragment>
