@@ -21,6 +21,11 @@ import TeacherHomePage from "./Pages/TeacherPages/TeacherHomePage";
 import TeacherProposalPage from "./Pages/TeacherPages/TeacherProposalsPage";
 import TeacherSubjectPage from "./Pages/TeacherPages/TeacherSubjectsPage";
 import TeacherGroupsPage from "./Pages/TeacherPages/TeacherGroupsPage";
+import GroupsPage from "./Pages/GroupsPage";
+import SubjectsPage from "./Pages/SubjectsPage";
+import TeacherSubjectDetailPage from "./Pages/TeacherPages/TeacherSubjectDetailPage";
+import TeacherGroupSubjectDetails from "./Pages/TeacherPages/TeacherGroupSubjectDetails";
+import SubjectDetailPage from "./Pages/SubjectDetailPage";
 
 
 function AppRoutes() {
@@ -51,7 +56,10 @@ function AppRoutes() {
       )}>
         <Route path="/home" element={<HomePage></HomePage>}></Route>
         <Route path="/calendar" element={<MainCalendar></MainCalendar>}></Route>
+        <Route path="/groups" element={<GroupsPage></GroupsPage>}></Route>
         <Route path="/projects" element={<Projects></Projects>}></Route>
+        <Route path="/subjects" element={<SubjectsPage></SubjectsPage>}></Route>
+        <Route path="/subjects/:subjectId" element={<SubjectDetailPage></SubjectDetailPage>}></Route>
         <Route path="/projects/:projectId" element={<ProjectMainPage></ProjectMainPage>}></Route>
         <Route path="/projects/:projectId/tasks" element={<ProjectTasksPage></ProjectTasksPage>}></Route>
         <Route path="/projects/:projectId/chat" element={<ProjectChat></ProjectChat>}></Route>
@@ -60,7 +68,8 @@ function AppRoutes() {
         <Route path="/thome" element={<TeacherHomePage></TeacherHomePage>}></Route>
         <Route path="/tcalendar" element={<MainCalendar></MainCalendar>}></Route>
         <Route path="/tsubjects" element={<TeacherSubjectPage></TeacherSubjectPage>}></Route>
-        {/* <Route path="/tsubjects/:subjectId" element={<TeacherSubjectDetails></TeacherSubjectDetails>}></Route> */}
+        <Route path="/tsubjects/:subjectId" element={<TeacherSubjectDetailPage></TeacherSubjectDetailPage>}></Route> 
+        <Route path="/tsubjects/:subjectId/group/:groupId" element={<TeacherGroupSubjectDetails></TeacherGroupSubjectDetails>}></Route> 
 
         <Route path="/tgroups" element={<TeacherGroupsPage></TeacherGroupsPage>}></Route>
         <Route path="/tproposals" element={<TeacherProposalPage></TeacherProposalPage>}></Route>

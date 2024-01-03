@@ -5,17 +5,16 @@ import ReactPaginate from "react-paginate";
 import { Button, Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import MainPageHeader from "../../Components/MainPageHeader";
 import { FaEye } from "react-icons/fa";
-const ITEMS_PER_PAGE = 6; // Ustal liczbę elementów na stronie
 
-export function ProjectTable({ data }) {
+export function ProjectTable({ data,count=6 }) {
     const [currentPage, setCurrentPage] = useState(0);
 
     const handlePageChange = ({ selected }) => {
         setCurrentPage(selected);
     };
 
-    const offset = currentPage * ITEMS_PER_PAGE;
-    const currentPageData = data.slice(offset, offset + ITEMS_PER_PAGE);
+    const offset = currentPage * count;
+    const currentPageData = data.slice(offset, offset + count);
 
     return (
         <div className="flex flex-col justify-items-end" >
@@ -40,7 +39,7 @@ export function ProjectTable({ data }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentPageData.map(({ title, description, createdDate, editedDate, teamMembers, group, subject, status }, index) => {
+                        {currentPageData.map(({uuid, title, description, createdDate, editedDate, teamMembers, group, subject, status }, index) => {
                             const isLast = index === TABLE_ROWS.length - 1;
                             const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
 
@@ -131,14 +130,14 @@ export function ProjectTable({ data }) {
                 </table>
 
             </Card>
-            {data.length > ITEMS_PER_PAGE && (
+            {data.length > count && (
                 <div className="flex flex-grow w-full h-full">
                     <ReactPaginate
                         className="flex flex-row w-full justify-evenly "
                         previousLabel={"poprzednia"}
                         nextLabel={"następna"}
                         breakLabel={""}
-                        pageCount={Math.ceil(data.length / ITEMS_PER_PAGE)}
+                        pageCount={Math.ceil(data.length / count)}
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={5}
                         onPageChange={handlePageChange}

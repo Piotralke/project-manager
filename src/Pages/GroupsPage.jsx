@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BsStack } from 'react-icons/bs';
-import ProjectOverview from '../../Components/ProjectOverwiev';
+
 import {
     Button,
     Typography,
@@ -17,13 +16,13 @@ import {
     ListItemSuffix,
     Checkbox,
   } from '@material-tailwind/react';
-import MainPageHeader from '../../Components/MainPageHeader';
-import { useAuth } from '../../auth';
-import RequestHandler from '../../Miscs/RequestHandler';
+import MainPageHeader from '../Components/MainPageHeader';
+import { useAuth } from '../auth';
+import RequestHandler from '../Miscs/RequestHandler';
 import ReactPaginate from 'react-paginate';
-import GroupOverwiev from '../../Components/GroupOverwiev';
+import GroupOverwiev from '../Components/GroupOverwiev';
 
-export default function TeacherGroupsPage() {
+export default function GroupsPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [title, setTitle] = useState();
     const [subjects, setSubjects] = useState([]);

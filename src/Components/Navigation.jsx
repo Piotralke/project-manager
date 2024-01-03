@@ -75,6 +75,14 @@ export default function Navigation() {
           showText={!menuCollapsed}
           inDrawer={windowWidth < 960} 
         ></NavigationItem>
+        <NavigationItem
+          icon={MdOutlinePlayLesson}
+          name="Przedmioty"
+          link="/subjects"
+          collapsed={menuCollapsed}
+          showText={!menuCollapsed}
+          inDrawer={windowWidth < 960} 
+        ></NavigationItem>
       </>
     );
   }

@@ -108,7 +108,7 @@ export default function TeacherSubjectPage() {
     return (
         <div className="grid w-full h-full grid-cols-1 lg:grid-cols-4 gap-5 p-5 bg-gray-300 lg:grid-rows-8 grid-rows">
             <MainPageHeader></MainPageHeader>
-            <div className="col-span-full">
+            <div className="col-span-full row-span-1">
                 <Button color="amber" onClick={handleCreateProject}>
                     Dodaj nowe zajęcia
                 </Button>
@@ -116,10 +116,11 @@ export default function TeacherSubjectPage() {
             {subjects.length > 0 ?
                 <>
                     {currentsubjects.map((subject, index) => (
-                        <Card key={index} >
+                        <>
+                        <Card className='col-span-2 row-span-1' key={index} >
                             <SubjectOverwiev data={subject}></SubjectOverwiev>
-                            
                         </Card>
+                        </>                    
                     ))}
                     {subjects.length > 6 ? <ReactPaginate
                         className='col-span-full row-span-1 row-start-7  flex flex-row justify-evenly'
