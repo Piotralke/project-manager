@@ -67,8 +67,8 @@ export function ProjectTable({ data, count = 6 }) {
                 
             }
            const makeProjectResponse = await RequestHandler.post(`/api/projects`, auth.getToken(),projectData)
-            location.reload();
         }
+        location.reload();
     }
     const handleDetailCheck = (proposal) => {
         setSelectedProposal(proposal);

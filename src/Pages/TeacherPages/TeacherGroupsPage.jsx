@@ -3,6 +3,7 @@ import { BsStack } from 'react-icons/bs';
 import ProjectOverview from '../../Components/ProjectOverwiev';
 import {
     Button,
+    Switch,
     Typography,
     Card,
     Dialog,
@@ -26,12 +27,43 @@ import GroupOverwiev from '../../Components/GroupOverwiev';
 export default function TeacherGroupsPage() {
     const [openDialog, setOpenDialog] = useState(false);
     const [title, setTitle] = useState();
-    const [subjects, setSubjects] = useState([]);
+    const [groups, setGroups] = useState([]);
+    const [allGroups,setAllGroups] = useState()
     const [currentPage, setCurrentPage] = useState(0);
     const [users, setUsers] = useState([]);
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [showOnlyTeacherGroups, setShowOnlyTeacherGroups] = useState(false); // Dodajemy stan przełącznika
+
+    const fetchAllGroups = async () => {
+      const response = await RequestHandler.get(`/api/groups/get-all`, auth.getToken());
+      setAllGroups(response);
+    };
   
+    const toggleTeacherGroups = () => {
+      setShowOnlyTeacherGroups(!showOnlyTeacherGroups);
+    };
+  
+    const filterGroups = () => {
+      if (showOnlyTeacherGroups) {
+        const teacherGroupIds = groups.map((group) => group.uuid); // Załóżmy, że masz unikalne identyfikatory grup
+        return allGroups.filter((group) => teacherGroupIds.includes(group.uuid));
+      }
+      return allGroups;
+    };
+  
+    const fetchGroups = async () => {
+      const user = await auth.getUser();
+      const response = await RequestHandler.get(`/api/groups/get-teacher-groups/${user.uuid}`, auth.getToken());
+      setGroups(response);
+    };
+  
+    useEffect(() => {
+      fetchGroups().catch(console.error);
+      fetchAllGroups().catch(console.error);
+    }, [showOnlyTeacherGroups]); // Dodajemy showOnlyTeacherGroups do zależności useEffect
+  
+    const filteredGroups = filterGroups();
     const handleTitleChange = (value) => {
       setTitle(value);
     };
@@ -84,41 +116,38 @@ export default function TeacherGroupsPage() {
 
   const auth = useAuth();
 
-  const fetchGroups = async () => {
-    const user = await auth.getUser();
-    const response = await RequestHandler.get(`/api/groups/get-teacher-groups/${user.uuid}`, auth.getToken());
-    console.log(response);
-    setSubjects(response);
-  };
-
-  useEffect(() => {
-    fetchGroups().catch(console.error);
-  }, []);
-
-  const subjectsPerPage = 6;
-  const pageCount = Math.ceil(subjects.length / subjectsPerPage);
+  const groupsPerPage = 6;
+  const pageCount = Math.ceil(groups.length / groupsPerPage);
   const filteredUsers = users.filter((user) =>
   `${user.name} ${user.surname}`.toLowerCase().includes(searchQuery.toLowerCase())
 );
 
 const offset = currentPage * 5; // Zakładam, że chcesz wyświetlać 5 użytkowników na stronie
 const currentUsers = filteredUsers.slice(offset, offset + 5); // Dostosuj do swoich potrzeb
+
+
   return (
     <div className="grid w-full h-full grid-cols-1 lg:grid-cols-4 gap-5 p-5 bg-gray-300 lg:grid-rows-8 grid-rows">
       <MainPageHeader></MainPageHeader>
-      <div className="col-span-full">
+      <div className="col-span-full flex flex-row space-x-5">
         <Button color="amber" onClick={handleCreateProject}>
           Utwórz nową grupę
         </Button>
+        <Switch
+        color="amber"
+          label="Pokaż tylko grupy, z którymi prowadzę zajęcia"
+          checked={showOnlyTeacherGroups}
+          onChange={toggleTeacherGroups}
+        />
       </div>
-      {subjects.length>0?
+      {filteredGroups?.length>0?
       <>
-      {subjects.map((group, index) => (
+      {filteredGroups?.map((group, index) => (
       <Card key={index} className="col-span-2 row-span-1">
         <GroupOverwiev data={group}></GroupOverwiev>
       </Card>
     ))}
-    {subjects.length>6? <ReactPaginate
+    {filteredGroups?.length>6? <ReactPaginate
     className='col-span-full row-span-1 row-start-7  flex flex-row justify-evenly'
       previousLabel={'previous'}
       nextLabel={'next'}
