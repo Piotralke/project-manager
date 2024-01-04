@@ -21,26 +21,54 @@ export function ProjectTable({ data, count = 6 }) {
     const statusType = (value) => {
         switch (value) {
             case 0:
-                return "NOWE"
+                return "Nowy"
             case 1:
-                return "PRZYJĘTY"
+                return "Przyjęty"
             case 2:
-                return "ODRZUCONY"
+                return "Odrzucony"
             case 3:
-                return "WYSŁANY PONOWNIE"
+                return "Wysłany ponownie"
         }
     }
     const handleSubmit = async (e,newStatus) =>{
         e.preventDefault();
+        
         const data = {
             uuid: selectedProposal.uuid,
             state: newStatus
         }
+        let groupSubjectId;
         const updateProposalResponse = await RequestHandler.put(`/api/project-proposals`,data,auth.getToken())
-        // if(newStatus==2)
-        // {
-        //     const makeProjectResponse = await RequestHandler.post(`/api/project`)
-        // }
+        if(newStatus==1)
+        {
+            selectedProposal.subject.group.forEach(groupObject => {
+                const groupSubjectUuid = groupObject.uuid;
+        
+                // Iterujemy przez członków grupy
+                groupObject.group.members.forEach(member => {
+                    const userUuid = member.userUuid;
+        
+                    // Sprawdzamy, czy userUuid istnieje w proposalSquad
+                    if (selectedProposal.proposalSquad.some(squadMember => squadMember.userUuid === userUuid)) {
+                        // Tutaj masz prawidłowe GroupSubjectUuid do dalszego użycia
+                        groupSubjectId = groupSubjectUuid;
+                    }
+                });
+            });
+            const teacher = await auth.getUser()
+            const members = selectedProposal.proposalSquad.map(m=>m.userUuid)
+            const projectData = {
+                title: selectedProposal.title,
+                description: selectedProposal.description,
+                ownerUuid: teacher.uuid,
+                members: members,
+                isPrivate: false,
+                groupSubjectUuid: groupSubjectId
+                
+            }
+           const makeProjectResponse = await RequestHandler.post(`/api/projects`, auth.getToken(),projectData)
+            location.reload();
+        }
     }
     const handleDetailCheck = (proposal) => {
         setSelectedProposal(proposal);
@@ -113,7 +141,7 @@ export function ProjectTable({ data, count = 6 }) {
                                             color="blue-gray"
                                             className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
                                         >
-                                            {proposal.editedAt ? proposal.editedAt : "Nie edytowano"}
+                                            {proposal.editedAt ? format(new Date(proposal.editedAt), "dd-MM-yyyy HH:mm:ss") : "Nie edytowano"}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
@@ -151,6 +179,7 @@ export function ProjectTable({ data, count = 6 }) {
                         <div className="flex flex-row space-x-2 w-full h-full">
                             <div className="flex flex-col flex-grow space-y-3 basis-3/4">
                                 <Typography variant="h6"> Utworzono: {format(new Date(selectedProposal.cretedAt), "dd-MM-yyyy HH:mm:ss")}</Typography>
+                                {selectedProposal.editedAt? <Typography variant="h6">{statusType(selectedProposal.state)}: {selectedProposal.editedAt ? format(new Date(selectedProposal.editedAt), "dd-MM-yyyy HH:mm:ss") : "Nie edytowano"}</Typography>:null}
                                 <Typography variant="h6">Temat projektu: {selectedProposal.title}</Typography>
                                 <Typography>{selectedProposal.description}</Typography>
                             </div>

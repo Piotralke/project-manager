@@ -13,8 +13,12 @@ export default function TeacherSubjectDetailPage() {
     const [groups,setGroups] = useState()
     const [loading, isLoading] = useState(true)
     const {subjectId} = useParams()
-
+    const [proposals,setProposals] = useState()
     const fetchData = async () => {
+
+        const proposalResponse = await RequestHandler.get(`/api/project-proposals/get-by-subject/${subjectId}`,auth.getToken())
+        setProposals(proposalResponse);
+
         const response = await RequestHandler.get(`/api/subjects/${subjectId}`,auth.getToken())
         console.log(response)
         setSubjectData(response)
@@ -32,90 +36,6 @@ export default function TeacherSubjectDetailPage() {
          console.log(subjectId)
     }, [])
 
-    const TABLE_ROWS = [
-        {
-            title: "Projekt A",
-            description: "Opis projektu A",
-            createdDate: "01/01/2022",
-            editedDate: "05/02/2022",
-            teamMembers: "Imię Nazwisko, Imię Nazwisko",
-            group: "Grupa 1",
-            subject: "Przedmiot XYZ",
-            status: "W trakcie",
-        },
-        {
-            title: "Projekt A",
-            description: "Opis projektu A",
-            createdDate: "01/01/2022",
-            editedDate: "05/02/2022",
-            teamMembers: "Imię Nazwisko, Imię Nazwisko",
-            group: "Grupa 1",
-            subject: "Przedmiot XYZ",
-            status: "NOWE",
-        },
-        {
-            title: "Projekt A",
-            description: "Opis projektu A",
-            createdDate: "01/01/2022",
-            editedDate: "05/02/2022",
-            teamMembers: "Imię Nazwisko, Imię Nazwisko",
-            group: "Grupa 1",
-            subject: "Przedmiot XYZ",
-            status: "NOWE",
-        },
-        {
-            title: "Projekt A",
-            description: "Opis projektu A",
-            createdDate: "01/01/2022",
-            editedDate: "05/02/2022",
-            teamMembers: "Imię Nazwisko, Imię Nazwisko",
-            group: "Grupa 1",
-            subject: "Przedmiot XYZ",
-            status: "NOWE",
-        },
-        {
-            title: "Projekt A",
-            description: "Opis projektu A",
-            createdDate: "01/01/2022",
-            editedDate: "05/02/2022",
-            teamMembers: "Imię Nazwisko, Imię Nazwisko",
-            group: "Grupa 1",
-            subject: "Przedmiot XYZ",
-            status: "NOWE",
-        },
-        {
-            title: "Projekt A",
-            description: "Opis projektu A",
-            createdDate: "01/01/2022",
-            editedDate: "05/02/2022",
-            teamMembers: "Imię Nazwisko, Imię Nazwisko",
-            group: "Grupa 1",
-            subject: "Przedmiot XYZ",
-            status: "NOWE",
-        },
-        {
-            title: "Projekt A",
-            description: "Opis projektu A",
-            createdDate: "01/01/2022",
-            editedDate: "05/02/2022",
-            teamMembers: "Imię Nazwisko, Imię Nazwisko",
-            group: "Grupa 1",
-            subject: "Przedmiot XYZ",
-            status: "NOWE",
-        },
-        {
-            title: "Projekt A",
-            description: "Opis projektu A",
-            createdDate: "01/01/2022",
-            editedDate: "05/02/2022",
-            teamMembers: "Imię Nazwisko, Imię Nazwisko",
-            group: "Grupa 1",
-            subject: "Przedmiot XYZ",
-            status: "NOWE",
-        },
-    
-        // Dodaj więcej wierszy w razie potrzeby
-    ];
     if(loading){
         return(
             <div className=" w-full h-full flex justify-center items-center p-5 bg-gray-300 ">
@@ -152,7 +72,7 @@ export default function TeacherSubjectDetailPage() {
             <Card className="col-span-3 row-span-4">
                 <CardHeader color="amber" className="font-bold flex items-center justify-center">Przesłane propozycje projektowe</CardHeader>
                 <CardBody>
-                    <ProjectTable data={TABLE_ROWS} count={3}></ProjectTable>
+                    <ProjectTable data={proposals} count={3}></ProjectTable>
                 </CardBody>
             </Card>
         </div>

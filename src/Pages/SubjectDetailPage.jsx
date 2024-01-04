@@ -93,26 +93,36 @@ export default function SubjectDetailPage() {
     };
 
     const fetchData = async () => {
-        const response = await RequestHandler.get(`/api/subjects/${subjectId}`, auth.getToken());
-        const user = await auth.getUser();
-        const proposal = await RequestHandler.get(`/api/project-proposals/get-user-proposal-for-subject/?subjectId=${subjectId}&userId=${user.uuid}`)
-        setProposal(proposal)
-        console.log(proposal)
-        setUser(user)
-        response.group.forEach((g) => {
-            const result = g.group.members.filter((x) => x.userUuid == user.uuid);
-            if (result.length > 0) {
-                const tab = [];
-                g.group.members.forEach((member) => {
-                    tab.push(member.user);
-                });
-                setGroupMembers(tab);
-                setUserGroup(g.group);
+        try {
+            const response = await RequestHandler.get(`/api/subjects/${subjectId}`, auth.getToken());
+            const user = await auth.getUser();
+            const proposal = await RequestHandler.get(`/api/project-proposals/get-user-proposal-for-subject/?subjectId=${subjectId}&userId=${user.uuid}`)
+            setProposal(proposal)
+            console.log(proposal)
+            if(proposal.state==1)
+            {
+                const projectResponse = await RequestHandler.get(`/api/projects/GetUserProjectForSubject/?subjectId=${subjectId}&userId=${user.uuid}`,auth.getToken())
+                console.log(projectResponse)
             }
-        });
-
-        setSubjectData(response);
-        isLoading(false);
+            setUser(user)
+            response.group.forEach((g) => {
+                const result = g.group.members.filter((x) => x.userUuid == user.uuid);
+                if (result.length > 0) {
+                    const tab = [];
+                    g.group.members.forEach((member) => {
+                        tab.push(member.user);
+                    });
+                    setGroupMembers(tab);
+                    setUserGroup(g.group);
+                }
+            });
+    
+            setSubjectData(response);
+            isLoading(false);
+        } catch (error) {
+            console.error(error)
+        }
+       
     };
     const statusText = (status) =>{
         switch(status){
@@ -160,7 +170,7 @@ export default function SubjectDetailPage() {
                 <CardHeader color="amber" className="font-bold flex items-center justify-center">Propozycja projektowa</CardHeader>
                 <CardBody>
                     {proposal ?
-                        <div className="flex flex-row w-full h-full">
+                        <div className="flex flex-row w-full h-full space-x-2">
                             <div className="flex flex-col basis-1/2">
                                 <Typography variant="h5">Tytuł: {proposal.title}</Typography>
                                 <Typography variant="h5">Opis:</Typography>

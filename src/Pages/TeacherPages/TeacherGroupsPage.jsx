@@ -77,6 +77,7 @@ export default function TeacherGroupsPage() {
         members: selectedMembers
       }
     const response = await RequestHandler.post(`/api/groups/create-group`,auth.getToken(),data)
+    console.log(response)
       handleCloseDialog();
     };
 
