@@ -1,25 +1,60 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-
-
-import { Button, Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
+import { Button, Card, CardBody, CardHeader, Typography, Spinner, Dialog, DialogHeader, DialogBody, DialogFooter } from "@material-tailwind/react";
 import MainPageHeader from "../../Components/MainPageHeader";
 import { FaEye } from "react-icons/fa";
-
-export function ProjectTable({ data,count=6 }) {
+import RequestHandler from "../../Miscs/RequestHandler";
+import { useAuth } from "../../auth";
+import format from "date-fns/format";
+export function ProjectTable({ data, count = 6 }) {
     const [currentPage, setCurrentPage] = useState(0);
-
+    const [open, isOpen] = useState(false)
+    const [selectedProposal, setSelectedProposal] = useState()
     const handlePageChange = ({ selected }) => {
         setCurrentPage(selected);
     };
-
+    const auth = useAuth()
     const offset = currentPage * count;
     const currentPageData = data.slice(offset, offset + count);
+
+
+    const statusType = (value) => {
+        switch (value) {
+            case 0:
+                return "NOWE"
+            case 1:
+                return "PRZYJĘTY"
+            case 2:
+                return "ODRZUCONY"
+            case 3:
+                return "WYSŁANY PONOWNIE"
+        }
+    }
+    const handleSubmit = async (e,newStatus) =>{
+        e.preventDefault();
+        const data = {
+            uuid: selectedProposal.uuid,
+            state: newStatus
+        }
+        const updateProposalResponse = await RequestHandler.put(`/api/project-proposals`,data,auth.getToken())
+        // if(newStatus==2)
+        // {
+        //     const makeProjectResponse = await RequestHandler.post(`/api/project`)
+        // }
+    }
+    const handleDetailCheck = (proposal) => {
+        setSelectedProposal(proposal);
+        isOpen(true);
+    }
+    const handleEventDialogClose = () => {
+        isOpen(false);
+        setSelectedProposal(null)
+      };
 
     return (
         <div className="flex flex-col justify-items-end" >
             <Card className="">
-                <table className="w-full  table-auto text-left">
+                <table className="w-full table-fixed text-left">
                     <thead>
                         <tr>
                             {TABLE_HEAD.map((head) => (
@@ -39,88 +74,68 @@ export function ProjectTable({ data,count=6 }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentPageData.map(({uuid, title, description, createdDate, editedDate, teamMembers, group, subject, status }, index) => {
-                            const isLast = index === TABLE_ROWS.length - 1;
-                            const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-
+                        {currentPageData.map((proposal, index) => {
+                            const isLast = index === data.length - 1;
+                            const classes = isLast ? `p-4 ` : `p-4 border-b border-blue-gray-50`
+                            console.log(classes)
                             return (
-                                <tr key={title}>
+                                <tr key={proposal.uuid}>
                                     <td className={classes}>
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className="font-normal"
+                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
                                         >
-                                            {title}
+                                            {proposal.title}
+                                        </Typography>
+                                    </td>
+                                    <td className={classes + "truncate"}>
+                                        <Typography
+                                            variant="small"
+                                            color="blue-gray"
+                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
+                                        >
+                                            {proposal.description}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className="font-normal"
+                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
                                         >
-                                            {description}
+                                            {format(new Date(proposal.cretedAt), "dd-MM-yyyy HH:mm:ss")}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className="font-normal"
+                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
                                         >
-                                            {createdDate}
+                                            {proposal.editedAt ? proposal.editedAt : "Nie edytowano"}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className="font-normal"
+                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
                                         >
-                                            {editedDate}
+                                            {proposal.subject.name}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className="font-normal"
+                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
                                         >
-                                            {teamMembers}
+                                            {statusType(proposal.state)}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
-                                        <Typography
-                                            variant="small"
-                                            color="blue-gray"
-                                            className="font-normal"
-                                        >
-                                            {group}
-                                        </Typography>
-                                    </td>
-                                    <td className={classes}>
-                                        <Typography
-                                            variant="small"
-                                            color="blue-gray"
-                                            className="font-normal"
-                                        >
-                                            {subject}
-                                        </Typography>
-                                    </td>
-                                    <td className={classes}>
-                                        <Typography
-                                            variant="small"
-                                            color="blue-gray"
-                                            className="font-normal"
-                                        >
-                                            {status}
-                                        </Typography>
-                                    </td>
-                                    <td className={classes}>
-                                        <Button color="amber" className=" aspect-square"><FaEye></FaEye></Button>
-
-
+                                        <Button color="amber" onClick={() => { handleDetailCheck(proposal) }} className="aspect-square"><FaEye></FaEye></Button>
                                     </td>
                                 </tr>
                             );
@@ -128,6 +143,54 @@ export function ProjectTable({ data,count=6 }) {
                         })}
                     </tbody>
                 </table>
+                {selectedProposal ?
+                    <Dialog open={open}>
+                        <form>
+                        <DialogHeader>Przedmiot: {selectedProposal.subject.name}</DialogHeader>
+                        <DialogBody>
+                        <div className="flex flex-row space-x-2 w-full h-full">
+                            <div className="flex flex-col flex-grow space-y-3 basis-3/4">
+                                <Typography variant="h6"> Utworzono: {format(new Date(selectedProposal.cretedAt), "dd-MM-yyyy HH:mm:ss")}</Typography>
+                                <Typography variant="h6">Temat projektu: {selectedProposal.title}</Typography>
+                                <Typography>{selectedProposal.description}</Typography>
+                            </div>
+                            <div className="h-full flex flex-col flex-grow space-y-3 basis-1/4">
+                                <Typography variant="h6">Skład zespołu:</Typography>
+                                {selectedProposal.proposalSquad.map(squadMember=>{
+                                    return(
+                                        <Typography>{squadMember.user.name} {squadMember.user.surname}</Typography>
+                                    )
+                                })}                      
+                            </div>
+                        </div>
+                        </DialogBody>
+                        <DialogFooter className="flex flex-row space-x-3">
+                            <Button className="mr-auto" onClick={handleEventDialogClose} color="red">
+                                Zamknij
+                            </Button>
+                            {(selectedProposal.state == 0 || selectedProposal.state == 3) ?
+                            <>
+                            <Button
+                                    color="amber"
+                                    type="submit"
+                                    onClick={(e)=>handleSubmit(e,1)}
+                                >
+                                    Przyjmij
+                                </Button>
+                                <Button
+                                    color="red"
+                                    type="submit"
+                                    onClick={(e)=>{handleSubmit(e,2)}}
+                                >
+                                    Odrzuć
+                                </Button>
+                            </>
+                                : null}
+
+                        </DialogFooter>
+                        </form>
+                    </Dialog>
+                    : null}
 
             </Card>
             {data.length > count && (
@@ -157,94 +220,29 @@ export function ProjectTable({ data,count=6 }) {
 }
 
 
-const TABLE_HEAD = ["Tytuł projektu", "Opis projektu", "Data utworzenia", "Data edycji", "Skład zespołu", "Grupa", "Przedmiot", "Status", "Szczegóły"];
+const TABLE_HEAD = ["Tytuł projektu", "Opis projektu", "Data utworzenia", "Data edycji", "Przedmiot", "Status", "Szczegóły"];
 
-const TABLE_ROWS = [
-    {
-        title: "Projekt A",
-        description: "Opis projektu A",
-        createdDate: "01/01/2022",
-        editedDate: "05/02/2022",
-        teamMembers: "Imię Nazwisko, Imię Nazwisko",
-        group: "Grupa 1",
-        subject: "Przedmiot XYZ",
-        status: "W trakcie",
-    },
-    {
-        title: "Projekt A",
-        description: "Opis projektu A",
-        createdDate: "01/01/2022",
-        editedDate: "05/02/2022",
-        teamMembers: "Imię Nazwisko, Imię Nazwisko",
-        group: "Grupa 1",
-        subject: "Przedmiot XYZ",
-        status: "NOWE",
-    },
-    {
-        title: "Projekt A",
-        description: "Opis projektu A",
-        createdDate: "01/01/2022",
-        editedDate: "05/02/2022",
-        teamMembers: "Imię Nazwisko, Imię Nazwisko",
-        group: "Grupa 1",
-        subject: "Przedmiot XYZ",
-        status: "NOWE",
-    },
-    {
-        title: "Projekt A",
-        description: "Opis projektu A",
-        createdDate: "01/01/2022",
-        editedDate: "05/02/2022",
-        teamMembers: "Imię Nazwisko, Imię Nazwisko",
-        group: "Grupa 1",
-        subject: "Przedmiot XYZ",
-        status: "NOWE",
-    },
-    {
-        title: "Projekt A",
-        description: "Opis projektu A",
-        createdDate: "01/01/2022",
-        editedDate: "05/02/2022",
-        teamMembers: "Imię Nazwisko, Imię Nazwisko",
-        group: "Grupa 1",
-        subject: "Przedmiot XYZ",
-        status: "NOWE",
-    },
-    {
-        title: "Projekt A",
-        description: "Opis projektu A",
-        createdDate: "01/01/2022",
-        editedDate: "05/02/2022",
-        teamMembers: "Imię Nazwisko, Imię Nazwisko",
-        group: "Grupa 1",
-        subject: "Przedmiot XYZ",
-        status: "NOWE",
-    },
-    {
-        title: "Projekt A",
-        description: "Opis projektu A",
-        createdDate: "01/01/2022",
-        editedDate: "05/02/2022",
-        teamMembers: "Imię Nazwisko, Imię Nazwisko",
-        group: "Grupa 1",
-        subject: "Przedmiot XYZ",
-        status: "NOWE",
-    },
-    {
-        title: "Projekt A",
-        description: "Opis projektu A",
-        createdDate: "01/01/2022",
-        editedDate: "05/02/2022",
-        teamMembers: "Imię Nazwisko, Imię Nazwisko",
-        group: "Grupa 1",
-        subject: "Przedmiot XYZ",
-        status: "NOWE",
-    },
 
-    // Dodaj więcej wierszy w razie potrzeby
-];
 
 export default function TeacherProposalPage() {
+    const [proposals, setProposals] = useState()
+    const [loading, setLoading] = useState(true);
+    const auth = useAuth()
+    const fetchData = async () => {
+        const user = await auth.getUser();
+        const response = await RequestHandler.get(`/api/project-proposals/get-all-teacher-proposals/${user.uuid}`, auth.getToken())
+        console.log(response)
+        setProposals(response)
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+    if (loading)
+        return (
+            <Spinner color="amber" className="m-auto"></Spinner>
+        )
     return (
         <div className="grid w-full h-full grid-cols-1 gap-5 p-5 bg-gray-300 lg:grid-cols-5 lg:grid-rows-8 grid-rows ">
             <MainPageHeader></MainPageHeader>
@@ -253,7 +251,7 @@ export default function TeacherProposalPage() {
                     <Typography variant="h5">Propozycje projektowe</Typography>
                 </CardHeader>
                 <CardBody>
-                    <ProjectTable data={TABLE_ROWS}></ProjectTable>
+                    <ProjectTable data={proposals}></ProjectTable>
                 </CardBody>
             </Card>
 
