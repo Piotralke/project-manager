@@ -1,4 +1,3 @@
-// auth.js
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';

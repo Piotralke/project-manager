@@ -1,10 +1,6 @@
-import { Outlet, Link, useNavigate, useLocation,useParams } from "react-router-dom";
-
-import { Select, Option } from "@material-tailwind/react";
-
-import { useState } from "react";
+import { Outlet, useLocation} from "react-router-dom";
 import Navigation from "./Navigation";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import ProjectNavigation from "./ProjectNavigation";
 export default function Layout() {
   const menuCollapsed = useSelector((state) => state.menu.menuCollapsed);

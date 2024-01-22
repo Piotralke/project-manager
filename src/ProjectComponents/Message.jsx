@@ -16,7 +16,6 @@ export default function Message({ messageData }) {
     const [attachmentInfo, setAttachmentInfo] = useState([]);
     const fetchUserPic = async () => {
         const u = await auth.getUser();
-        console.log(u)
         if (messageData.senderUuid === u.uuid)
             isUserMessage(true)
         const pic = await RequestHandler.get(`/api/users/profile-picture?userId=${messageData.senderUuid}`, auth.getToken());
@@ -24,11 +23,7 @@ export default function Message({ messageData }) {
         setLoading(false)
     }
     const fetchPicsData = async () => {
-        console.log(messageData.messageAttachments)
-
         messageData.messageAttachments.map(async (attachment) => {
-            console.log(attachment)
-
             const response = await RequestHandler.get(`/api/chat/GetAttachmentContext/${attachment.uuid}`, auth.getToken())
             setAttachmentInfo([...attachmentInfo, response])
         })
@@ -48,18 +43,13 @@ export default function Message({ messageData }) {
             const downloadLink = document.createElement('a');
             downloadLink.href = window.URL.createObjectURL(new Blob([response.data]));
             console.log(response)
-            // Ustaw nazwę pliku na podstawie nagłówka Content-Disposition (jeśli dostępny)
             const contentDisposition = response.headers['content-disposition'];
             const fileNameMatch = contentDisposition && contentDisposition.match(/filename="(.*)"/);
             const fileName = fileNameMatch ? fileNameMatch[1] : 'file';
 
             downloadLink.download = attachment.fileName + attachment.fileType;
-
-            // Dodaj link do dokumentu i kliknij w niego, aby rozpocząć pobieranie
             document.body.appendChild(downloadLink);
             downloadLink.click();
-
-            // Usuń link po pobraniu
             document.body.removeChild(downloadLink);
         } catch (error) {
             console.error('Wystąpił błąd:', error);
@@ -97,9 +87,9 @@ export default function Message({ messageData }) {
 
             <div className={`flex flex-col p-1 mt-auto space-y-1 text-left ${userMessage ? "ml-auto" : null}`}>
                 {userMessage ? null : <Typography variant="small">{message?.sender?.name} {message?.sender?.surname}</Typography>}
-                <div className={`p-2 ${userMessage ? "bg-amber-300 ml-auto" : "bg-gray-300 mr-auto"} rounded-xl`}>
+                {message?.content? <div className={`p-2 ${userMessage ? "bg-amber-300 ml-auto" : "bg-gray-300 mr-auto"} rounded-xl`}>
                     <Typography variant="small">{message?.content}</Typography>
-                </div>
+                </div> :null }
                 {message?.hasAttachment ?
                     <div className="grid grid-cols-3 gap-1">
                         {message?.messageAttachments.map((attachment, index) => (

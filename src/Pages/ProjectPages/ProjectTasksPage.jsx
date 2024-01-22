@@ -6,11 +6,11 @@ import { useParams } from "react-router-dom"
 import { useAuth } from "../../auth"
 import RequestHandler from "../../Miscs/RequestHandler"
 export default function ProjectTasksPage() {
-    const [userTasks, setUserTasks] = useState([])
-    const [projectTasks, setProjectTasks] = useState([])
     const { projectId } = useParams()
     const [onlyUser, isOnlyUser] = useState(false)
     const auth = useAuth();
+    const [userTasks, setUserTasks] = useState([])
+    const [projectTasks, setProjectTasks] = useState([])
     const fetchData = async () => {
         const user = await auth.getUser()
         const requestUser = `/api/user-events/get-events-for-user/${user.uuid}`;
@@ -22,8 +22,6 @@ export default function ProjectTasksPage() {
         );
         setUserTasks(userTasks);
         setProjectTasks(projectResponse);
-        console.log(projectResponse)
-        console.log(userTasks)
     }
 
     useEffect(() => {
@@ -66,7 +64,7 @@ export default function ProjectTasksPage() {
                 </CardHeader>
                 <CardBody className=" h-full">
                     {(onlyUser === true ? userTasks?.filter(x => x.status === 2).length > 0 : projectTasks?.filter(x => x.status === 2).length > 0) ?
-                        <TaskList taskList={onlyUser === true ? userTasks?.filter(x => x.status === 0) : projectTasks?.filter(x => x.status === 0)}></TaskList> :
+                        <TaskList taskList={onlyUser === true ? userTasks?.filter(x => x.status === 2) : projectTasks?.filter(x => x.status === 2)}></TaskList> :
                         <Typography className="text-center justify-center items-center" variant="h6">Brak zadań</Typography>
                     }
                 </CardBody>

@@ -38,7 +38,7 @@ export function ProjectTable({ data, count = 6 }) {
             state: newStatus
         }
         let groupSubjectId;
-        const updateProposalResponse = await RequestHandler.put(`/api/project-proposals`,data,auth.getToken())
+        const updateProposalResponse = await RequestHandler.put(`/api/project-proposals/update-status`,data,auth.getToken())
         if(newStatus==1)
         {
             selectedProposal.subject.group.forEach(groupObject => {
@@ -112,25 +112,16 @@ export function ProjectTable({ data, count = 6 }) {
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
+                                            className={`${proposal.state == 0 || proposal.state == 3 ? "font-bold" : "font-normal"}`}
                                         >
                                             {proposal.title}
-                                        </Typography>
-                                    </td>
-                                    <td className={classes + "truncate"}>
-                                        <Typography
-                                            variant="small"
-                                            color="blue-gray"
-                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
-                                        >
-                                            {proposal.description}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
+                                            className={`${proposal.state == 0 || proposal.state == 3 ? "font-bold" : "font-normal"}`}
                                         >
                                             {format(new Date(proposal.cretedAt), "dd-MM-yyyy HH:mm:ss")}
                                         </Typography>
@@ -139,7 +130,7 @@ export function ProjectTable({ data, count = 6 }) {
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
+                                            className={`${proposal.state == 0 || proposal.state == 3 ? "font-bold" : "font-normal"}`}
                                         >
                                             {proposal.editedAt ? format(new Date(proposal.editedAt), "dd-MM-yyyy HH:mm:ss") : "Nie edytowano"}
                                         </Typography>
@@ -148,7 +139,7 @@ export function ProjectTable({ data, count = 6 }) {
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
+                                            className={`${proposal.state == 0 || proposal.state == 3 ? "font-bold" : "font-normal"}`}
                                         >
                                             {proposal.subject.name}
                                         </Typography>
@@ -157,7 +148,7 @@ export function ProjectTable({ data, count = 6 }) {
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className={`${proposal.state == 0 ? "font-bold" : "font-normal"}`}
+                                            className={`${proposal.state == 0 || proposal.state == 3 ? "font-bold" : "font-normal"}`}
                                         >
                                             {statusType(proposal.state)}
                                         </Typography>
@@ -249,7 +240,7 @@ export function ProjectTable({ data, count = 6 }) {
 }
 
 
-const TABLE_HEAD = ["Tytuł projektu", "Opis projektu", "Data utworzenia", "Data edycji", "Przedmiot", "Status", "Szczegóły"];
+const TABLE_HEAD = ["Tytuł projektu", "Data utworzenia", "Data edycji", "Przedmiot", "Status", "Szczegóły"];
 
 
 

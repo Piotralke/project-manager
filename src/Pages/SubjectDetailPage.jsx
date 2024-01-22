@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import ReactPaginate from "react-paginate";
 import { format } from "date-fns";
+import ProjectOverview from "../Components/ProjectOverwiev";
 const ITEMS_PER_PAGE = 5; // Adjust the number of items per page as needed
 
 export default function SubjectDetailPage() {
@@ -30,6 +31,7 @@ export default function SubjectDetailPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredMembers, setFilteredMembers] = useState([]);
     const [proposal, setProposal] = useState(null)
+    const [subjectProject, setSubjectProject] = useState();
     useEffect(() => {
         const offset = currentPage * ITEMS_PER_PAGE;
         const currentMembers = filteredMembers.slice(offset, offset + ITEMS_PER_PAGE);
@@ -79,15 +81,30 @@ export default function SubjectDetailPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(selectedMembers)
-        const data =
+        if(proposal.state==2)
         {
-            SubjectUuid: subjectId,
-            Title: title,
-            Description: desc,
-            MembersIds: selectedMembers
+            const data = 
+            {
+                uuid: proposal.uuid,
+                title: title,
+                description: desc,
+                MembersIds: selectedMembers
+            }
+            const response = await RequestHandler.put(`/api/project-proposals`,data,auth.getToken());
         }
-        console.log(data)
-        const response = await RequestHandler.post(`/api/project-proposals`, auth.getToken(), data)
+        else
+        {
+            const data =
+            {
+                SubjectUuid: subjectId,
+                Title: title,
+                Description: desc,
+                MembersIds: selectedMembers
+            }
+            console.log(data)
+            const response = await RequestHandler.post(`/api/project-proposals`, auth.getToken(), data)
+        }
+        
         location.reload();
         // Your submission logic here
     };
@@ -99,10 +116,10 @@ export default function SubjectDetailPage() {
             const proposal = await RequestHandler.get(`/api/project-proposals/get-user-proposal-for-subject/?subjectId=${subjectId}&userId=${user.uuid}`)
             setProposal(proposal)
             console.log(proposal)
-            if(proposal.state==1)
-            {
-                const projectResponse = await RequestHandler.get(`/api/projects/GetUserProjectForSubject/?subjectId=${subjectId}&userId=${user.uuid}`,auth.getToken())
+            if (proposal.state == 1) {
+                const projectResponse = await RequestHandler.get(`/api/projects/GetUserProjectForSubject/?subjectId=${subjectId}&userId=${user.uuid}`, auth.getToken())
                 console.log(projectResponse)
+                setSubjectProject(projectResponse)
             }
             setUser(user)
             response.group.forEach((g) => {
@@ -116,22 +133,31 @@ export default function SubjectDetailPage() {
                     setUserGroup(g.group);
                 }
             });
-    
+
             setSubjectData(response);
             isLoading(false);
         } catch (error) {
             console.error(error)
         }
-       
+
     };
-    const statusText = (status) =>{
-        switch(status){
+    const handleEditProposal = () => {
+        if (proposal && proposal.state === 2) {
+            setTitle(proposal.title);
+            setDesc(proposal.description);
+            const memberIds = proposal.proposalSquad.map(member => member.user.id);
+            setSelectedMembers(memberIds);
+            isDialogOpen(true);
+        }
+    };
+    const statusText = (status) => {
+        switch (status) {
             case 0:
                 return "Wysłano"
             case 1:
-                return "Przyjęto" 
+                return "Przyjęto"
             case 2:
-                return "Odrzucono, edytuj"
+                return "Odrzucono"
             case 3:
                 return "Wysłano ponownie"
         }
@@ -148,7 +174,7 @@ export default function SubjectDetailPage() {
             </div>
         );
     }
-    
+
     return (
         <div className="grid w-full h-full grid-cols-1 gap-5 p-5 bg-gray-300 lg:grid-cols-5 lg:grid-rows-8 grid-rows ">
             <MainPageHeader></MainPageHeader>
@@ -165,6 +191,10 @@ export default function SubjectDetailPage() {
             </Card>
             <Card className="col-span-3 row-span-3 p-2">
                 <CardHeader color="amber" className="font-bold flex items-center justify-center">Twój projekt</CardHeader>
+                <CardBody className="flex my-auto">
+                    {subjectProject? <ProjectOverview projectUuid={subjectProject.uuid} isPinned={true}></ProjectOverview>:<Typography className="flex items-center justify-center" variant="h5">Brak projektu</Typography>}
+                    
+                </CardBody>
             </Card>
             <Card className="col-span-3 row-span-3">
                 <CardHeader color="amber" className="font-bold flex items-center justify-center">Propozycja projektowa</CardHeader>
@@ -179,13 +209,14 @@ export default function SubjectDetailPage() {
                             <div className="flex flex-col basis-1/3">
                                 <Typography variant="h6">Przesłano: {format(new Date(proposal.cretedAt), "dd-MM-yyyy HH:mm:ss")}</Typography>
                                 <Typography variant="h6">Skład zespołu:</Typography>
-                                {proposal.proposalSquad.map(member=>{
+                                {proposal.proposalSquad.map(member => {
                                     return <Typography variant="small">{member.user.name} {member.user.surname}</Typography>
                                 })}
                             </div>
                             <div className="flex flex-col basis-1/6">
                                 <Typography variant="h6">Status</Typography>
                                 <Typography>{statusText(proposal.state)}</Typography>
+                                {proposal.state==2? <Button color="amber" onClick={handleEditProposal}>EDYTUJ</Button>:null}
                             </div>
                         </div>
                         :
@@ -206,6 +237,7 @@ export default function SubjectDetailPage() {
                                 margin="normal"
                                 color="amber"
                                 fullWidth
+                                value={title}
                                 onChange={(e) => handleTitleChange(e.target.value)}
                             />
                             <Textarea
@@ -216,6 +248,7 @@ export default function SubjectDetailPage() {
                                 fullWidth
                                 multiline
                                 rows={4}
+                                value={desc}
                                 onChange={(e) => handleDescriptionChange(e.target.value)}
                             />
                             {/* List with pagination */}

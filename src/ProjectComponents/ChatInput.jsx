@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Input } from "@material-tailwind/react";
+import { Badge, Button, Input } from "@material-tailwind/react";
 import { IoSend } from "react-icons/io5";
 import { TiAttachment } from "react-icons/ti";
 import { useParams } from "react-router-dom";
@@ -24,11 +24,14 @@ export default function ChatInput() {
     e.preventDefault()
     // Wysyłanie wiadomości i załączników
     const user = await auth.getUser()
+    
+
     console.log("Message:", message);
     console.log("Attachments:", attachments);
 
     const formData = new FormData();
-    formData.append("content", message);
+    if(message)
+      formData.append("content", message);
     formData.append("hasAttachment", attachments.length > 0 ? "true" : "false");
     formData.append("projectUuid", projectId);
     formData.append("senderUuid", user.uuid);
@@ -52,6 +55,7 @@ export default function ChatInput() {
     <form onSubmit={(e)=>{sendMessage(e)}} enctype="multipart/form-data">
       <div className="flex flex-row w-full p-1 mt-auto space-x-2 ">
         <label htmlFor="fileInput" className="cursor-pointer">
+          <Badge content={attachments.length} invisible={!attachments.length>0}>
           <TiAttachment className="w-10 h-10"></TiAttachment>
           <input
             type="file"
@@ -59,6 +63,8 @@ export default function ChatInput() {
             className="hidden"
             onChange={handleAttachment}
           />
+          </Badge>
+          
         </label>
         <Input
           color="amber"

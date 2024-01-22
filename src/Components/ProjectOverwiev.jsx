@@ -37,6 +37,7 @@ export default function ProjectOverview({ isPinned, projectUuid }) {
         const response = await RequestHandler.put(`/api/users/PinProject/${projectUuid}`, null, auth.getToken())
     }
     useEffect(() => {
+        console.log(isPinned)
         fetchProject().catch(console.error)
         isLoading(false)
     }, [])
@@ -47,7 +48,6 @@ export default function ProjectOverview({ isPinned, projectUuid }) {
     if (!projectData) {
         return (
             <div className="flex items-center justify-center w-full h-full ">
-
                 <Typography variant="h5">Brak przypiętego projektu.</Typography>
             </div>
         )

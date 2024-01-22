@@ -47,6 +47,8 @@ export default function ProjectNavigation() {
   const dispatch = useDispatch();
   const { projectId } = useParams();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const auth = useAuth()
+  const role = auth.getRoleFromToken();
   const handleToggleMenu = () => {
     dispatch(toggleMenu());
   };
@@ -93,14 +95,14 @@ export default function ProjectNavigation() {
           showText={!menuCollapsed}
           inDrawer={windowWidth < 960}
         ></NavigationItem>
-        <NavigationItem
+        {/* <NavigationItem
           icon={IoMdSettings}
           name="Ustawienia projektu"
           link={`/projects/${projectId}/settings`}
           collapsed={menuCollapsed}
           showText={!menuCollapsed}
           inDrawer={windowWidth < 960}
-        ></NavigationItem>
+        ></NavigationItem> */}
       </>
     );
   }
@@ -122,7 +124,7 @@ export default function ProjectNavigation() {
 
   const openDrawer = () => setOpen(true);
   const closeDrawer = () => setOpen(false);
-  const auth = useAuth()
+
   const navigate = useNavigate()
   return (
     <>
@@ -145,7 +147,7 @@ export default function ProjectNavigation() {
           <NavigationItem
             icon={IoHome}
             name="Strona główna"
-            link="/home"
+            link={ role == "TEACHER"? "/thome":"/home"}
             collapsed={menuCollapsed}
             showText={!menuCollapsed}
             inDrawer={windowWidth < 960}

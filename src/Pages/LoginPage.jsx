@@ -48,7 +48,6 @@ const LoginPage = () => {
                 navigate("/thome")
         } catch (error) {
             console.error("Login error:", error.response.data);
-            // Tutaj możesz dodać kod obsługujący błąd logowania
         }
     };
    

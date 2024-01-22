@@ -218,7 +218,7 @@ export default function TeacherSubjectPage() {
                             Anuluj
                         </Button>
                         <Button color="amber" type="submit" disabled={!title || !desc}>
-                            Utwórz projekt
+                            Utwórz przedmiot
                         </Button>
                     </DialogFooter>
                 </form>

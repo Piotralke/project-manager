@@ -43,27 +43,7 @@ export default function MainPageHeader() {
             <section className="flex flex-row space-x-3">
                 <Typography variant="lead">{userData?.name + " " + userData?.surname}</Typography>
                 <Avatar src={`data:image/jpeg;base64,${userPic}`}></Avatar>
-                <Badge content={`${notifications.length}`} className={`${notifications.length > 0 ? null : "hidden"}`}>
-                    <Popover placement="bottom-start">
-                        <PopoverHandler>
-                            <Button className="flex bg-amber-400 rounded-full w-16 h-16 place-content-center items-center justify-center">
-                                <BiBell className="w-8 h-8 text-black"></BiBell>
-                            </Button>
-                        </PopoverHandler>
-                        <PopoverContent className="w-1/4 space-y-2 m-2">
-                            {notifications.map((not, index) => {
-                                return (
-                                    <div key={index} className="w-full flex flex-row divide-x divide-gray-400 space-x-2 even:bg-gray-300 rounded-lg p-2">
-                                        <Typography variant="h6">{not.title}</Typography>
-                                        <Typography className="p-2" variant="small">{not.description}</Typography>
-                                    </div>
-
-                                )
-
-                            })}
-                        </PopoverContent>
-                    </Popover>
-                </Badge>
+                
             </section>
         </section>
     )

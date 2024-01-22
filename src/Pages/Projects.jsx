@@ -41,6 +41,7 @@ export default function Projects() {
       ownerUuid: user.uuid,
       members: [],
       isPrivate: true,
+      groupSubjectUuid: null
     };
     const response = await RequestHandler.post('/api/projects', auth.getToken(), payload);
     console.log(response);

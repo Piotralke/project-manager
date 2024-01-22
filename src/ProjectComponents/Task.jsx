@@ -23,6 +23,15 @@ export default function Task({ taskData }) {
     await fetchPics(users)
 
   }
+  const updateTask = async (newStatus) =>{
+    const data = {
+      uuid: taskData.uuid,
+      status: newStatus
+    }
+    const response = await RequestHandler.put(`/api/projects/UpdateProjectEvent`,data,auth.getToken())
+    console.log(response)
+    location.reload()
+  }
   useEffect(() => {
     fetchData()
   }, [taskData]);
@@ -66,11 +75,11 @@ export default function Task({ taskData }) {
       <Typography variant="h5">{taskData.title}</Typography>
       <Typography variant="paragraph">{taskData.description}</Typography>
       <Typography variant="small" className="font-bold">
-        {taskData.status === "FINISHED"
+        {taskData.status === 2
           ? `Zakończono: ${new Date(taskData.endDate).toLocaleString()}`
           : `Wykonać do: ${new Date(taskData.dueTo).toLocaleString()}`}
       </Typography>
-      {taskData.status !== "FINISHED" && (
+      {taskData.status !== 2 && (
         <Typography variant="small">
           {calculateRemainingTime(taskData.dueTo)}
         </Typography>
@@ -85,14 +94,14 @@ export default function Task({ taskData }) {
         })}
       </div>
       {taskData.status === 0 && (
-        <Button color="green" size="sm" className="ml-auto">
+        <Button color="green" size="sm" className="ml-auto" onClick={()=>updateTask(1)}>
           Rozpocznij
-        </Button> //po kliknięciu zmiana statusu zadania na rozpoczęte
+        </Button>
       )}
       {taskData.status === 1 && (
-        <Button color="red" size="sm" className="ml-auto">
+        <Button color="red" size="sm" className="ml-auto" onClick={()=>updateTask(2)}>
           Zakończ
-        </Button> //po kliknięciu zmiana statusu zadania na zakończone
+        </Button>
       )}
     </Card>
   );

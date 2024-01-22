@@ -4,8 +4,9 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../auth";
 import RequestHandler from "../Miscs/RequestHandler";
 import { IoMdAdd } from "react-icons/io";
+import { FaCrown } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
-export default function ProjectMembers() {
+export default function ProjectMembers({isPrivate, ownerUuid}) {
     const auth = useAuth();
     const { projectId } = useParams()
     const [projectMembers, setProjectMembers] = useState([])
@@ -77,6 +78,7 @@ export default function ProjectMembers() {
         await fetchPics(members)
     }
     useEffect(() => {
+        console.log(ownerUuid)
         fetchData().catch(console.error)
     }, [])
     return (
@@ -89,11 +91,13 @@ export default function ProjectMembers() {
                         <div className="flex flex-row items-center p-2 space-x-2 even:bg-gray-300 rounded-xl" key={index}>
                             <Avatar src={`data:image/jpeg;base64,${member.pic}`}></Avatar>
                             <Typography variant="paragraph" className="font-bold">{member.name} {member.surname}</Typography>
+                            {ownerUuid == member.uuid? <FaCrown className="flex flex-grow text-amber-500"></FaCrown>:null}
                         </div>
                     )
                 })}
             </div>
-            <Button color="amber" className="w-1/2 mt-auto ml-auto" onClick={handleMemberDialogOpen}>Dodaj członka</Button>
+            {isPrivate? <Button color="amber" className="w-1/2 mt-auto ml-auto" onClick={handleMemberDialogOpen}>Dodaj członka</Button>: null }
+            
             <Dialog open={addMemberDialogOpen} size="lg">
                 <form onSubmit={handleSubmit}>
                 <DialogHeader>

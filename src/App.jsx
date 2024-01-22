@@ -27,7 +27,6 @@ import TeacherSubjectDetailPage from "./Pages/TeacherPages/TeacherSubjectDetailP
 import TeacherGroupSubjectDetails from "./Pages/TeacherPages/TeacherGroupSubjectDetails";
 import SubjectDetailPage from "./Pages/SubjectDetailPage";
 
-
 function AppRoutes() {
   const [isAuthenticated, setIsAuthenticated] = useState()
   const auth = useAuth()
@@ -54,6 +53,7 @@ function AppRoutes() {
       <Route path="/" element={isAuthenticated ? (<Layout></Layout>) : (
         <Navigate to="/login"></Navigate>
       )}>
+        
         <Route path="/home" element={<HomePage></HomePage>}></Route>
         <Route path="/calendar" element={<MainCalendar></MainCalendar>}></Route>
         <Route path="/groups" element={<GroupsPage></GroupsPage>}></Route>

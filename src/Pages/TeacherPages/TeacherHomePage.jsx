@@ -41,12 +41,7 @@ export default function TeacherHomePage() {
                 </CardBody>
             </Card>
             <ClockCard className="col-span-full lg:col-span-2"></ClockCard>
-            <Card className="row-span-2 col-span-full lg:col-span-2">
-                
-            </Card>
-            <Card className="row-span-4 col-span-full lg:col-span-2">
-                
-            </Card>
+
 
         </div>
     )

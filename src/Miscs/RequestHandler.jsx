@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useAuth } from '../auth';
 
 const BASE_URL = 'http://localhost:5048';
 

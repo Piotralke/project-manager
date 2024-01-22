@@ -1,18 +1,20 @@
-import { Button, 
-  Dialog, 
-  DialogBody, 
-  DialogFooter, 
-  DialogHeader, 
-  Radio, 
-  Input, 
-  Textarea, 
-  Option, 
-  Typography, 
-  Checkbox, 
-  Select, 
+import {
+  Button,
+  Dialog,
+  DialogBody,
+  DialogFooter,
+  DialogHeader,
+  Radio,
+  Input,
+  Textarea,
+  Option,
+  Typography,
+  Checkbox,
+  Select,
   Spinner,
   Card,
-List, ListItem, ListItemSuffix } from "@material-tailwind/react";
+  List, ListItem, ListItemSuffix
+} from "@material-tailwind/react";
 import { Gantt } from 'gantt-task-react';
 import "gantt-task-react/dist/index.css";
 import { useEffect, useState } from "react";
@@ -35,26 +37,27 @@ export default function ProjectGanntPage() {
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTasks,setSelectedTasks] = useState([])
+  const [selectedTasks, setSelectedTasks] = useState([])
   const auth = useAuth()
   const ITEMS_PER_PAGE = 3;
 
   const handleTaskSelection = (taskId) => {
     const isSelected = selectedTasks.includes(taskId);
-    if(isSelected){
-      setSelectedTasks((prev)=>prev.filter((id)=>id!==taskId))
+    if (isSelected) {
+      setSelectedTasks((prev) => prev.filter((id) => id !== taskId))
     }
-    else{
-      setSelectedTasks((prev)=>[...prev,taskId])
+    else {
+      setSelectedTasks((prev) => [...prev, taskId])
     }
   };
 
-  const handleCheckboxChange = (taskId) => {
-    handleTaskSelection(taskId);
-  };
   const handleDialogClose = () => {
     openDialog(false);
-    resetForm();
+    setStartDate(null)
+    setEndDate(null)
+    setTitle(null)
+    setDesc(null)
+    setSelectedType(null)
   };
   const handlekDialogOpen = () => {
     openDialog(true);
@@ -70,6 +73,7 @@ export default function ProjectGanntPage() {
       type: selectedType,
       previousTasksGuids: selectedTasks
     }
+    console.log(data)
     const response = await RequestHandler.post(`/api/projects/AddGanttTask`, auth.getToken(), data)
     location.reload()
   }
@@ -79,16 +83,45 @@ export default function ProjectGanntPage() {
   const handleDescriptionChange = (value) => {
     setDesc(value);
   };
+
+  const findLatestEndDate = () => {
+    let latestEndDate = new Date(Math.max(...selectedTasks.map(taskId => {
+      const task = projectTasks.find(t => t.id === taskId);
+      return new Date(task.end);
+    })));
+  
+    // Upewnij się, że data jest prawidłowa
+    if (!latestEndDate || isNaN(latestEndDate.getTime())) {
+      return null;
+    }
+  
+    return latestEndDate;
+  };
+  
+  // Aktualizacja stanu startDate przy wyborze zadań poprzedzających
+  useEffect(() => {
+    if (selectedTasks.length > 0) {
+      const latestEndDate = findLatestEndDate();
+      if (latestEndDate) {
+        setStartDate(latestEndDate);
+      }
+    }
+  }, [selectedTasks]); // Zależność od selectedTasks
+
   const fetchData = async () => {
     const response = await RequestHandler.get(`/api/projects/GetProjectGanttTasks/${projectId}`, auth.getToken())
     console.log(response)
-    const tasksWithProgress = response.map(task => ({
-      ...task,
-      start: new Date(task.start),
-      end: new Date(task.end),
-      progress: 100, // Default progress value
-    }));
-    setProjectTasks(tasksWithProgress)
+    if (response.length > 0) {
+      const tasksWithProgress = response.map(task => ({
+        ...task,
+        start: new Date(task.start),
+        end: new Date(task.end),
+        progress: 100, // Default progress value
+      }));
+      console.log(JSON.stringify(tasksWithProgress))
+      setProjectTasks(tasksWithProgress)
+    }
+
     setLoading(false)
   }
   useEffect(() => {
@@ -123,9 +156,12 @@ export default function ProjectGanntPage() {
         <Radio name="type" color="amber" label="Tygodniowy" onChange={() => setType("Week")}></Radio>
         <Radio name="type" color="amber" label="Miesęczny" onChange={() => setType("Month")}></Radio>
       </section>
-      <div className="col-span-full row-span-6 w-full h-full">
-        <Gantt  barProgressColor="#FFC107" barProgressSelectedColor="#FFC107" columnWidth={200} ganttHeight={500} listCellWidth={""} TooltipContent={Tooltip} className="w-full h-full" tasks={projectTasks} viewMode={type}></Gantt>
-      </div>
+      {
+        projectTasks.length > 0 ? <div className="col-span-full row-span-6 w-full h-full">
+          <Gantt barProgressColor="#FFC107" barProgressSelectedColor="#FFC107" columnWidth={200} ganttHeight={500} listCellWidth={""} TooltipContent={Tooltip} className="w-full h-full" tasks={projectTasks} viewMode={type}></Gantt>
+        </div> : null
+      }
+
       <Dialog open={dialog}>
         <form onSubmit={(e) => { handleSubmit(e) }}>
           <DialogHeader>
@@ -164,6 +200,7 @@ export default function ProjectGanntPage() {
                         selected={startDate}
                         onChange={(date) => setStartDate(date)}
                         closeOnScroll={true}
+                        minDate={selectedTasks.length > 0 && findLatestEndDate()}
                       />
                     </div>
                     <div className="flex flex-col">
@@ -175,6 +212,7 @@ export default function ProjectGanntPage() {
                         selected={end}
                         onChange={(date) => setEndDate(date)}
                         closeOnScroll={true}
+                        minDate={startDate}
                       />
                     </div>
                   </div>
@@ -199,8 +237,7 @@ export default function ProjectGanntPage() {
                         <ListItemSuffix>
                           <Checkbox
                             color="amber"
-                            checked={task.isSelected}
-                            onChange={() => handleCheckboxChange(task.id)}
+                            checked={selectedTasks.includes(task.id)}
                           ></Checkbox>
                         </ListItemSuffix>
                       </ListItem>
@@ -235,7 +272,13 @@ export default function ProjectGanntPage() {
             <Button
               color="amber"
               type="submit"
-
+              disabled={
+                !title || 
+                !desc || 
+                !startDate || 
+                (selectedType === "task" && !end) || 
+                (selectedType === "milestone" && selectedTasks.length > 0 && !findLatestEndDate())
+              }
             >
               Dodaj zadanie
             </Button>

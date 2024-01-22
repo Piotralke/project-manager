@@ -87,9 +87,6 @@ export default function MainCalendar() {
     setUserProjects(projects);
   };
   const fetchProjectMembers = async () => {
-
-   
-      
     const members = await RequestHandler.get(`/api/projects/${selectedProject}/GetProjectMembers`, auth.getToken()) // tu są same id
     setProjectMembers(members);
     console.log(members)
@@ -114,7 +111,6 @@ export default function MainCalendar() {
   }, [currentPage, searchQuery]);
   useEffect(() => {
     if (selectedProject) {
-
       fetchProjectMembers()
     }
   }, [selectedProject])
@@ -165,7 +161,7 @@ export default function MainCalendar() {
         <form onSubmit={(e) => { handleSubmit(e, 0) }}>
           <DialogHeader>Utwórz nowe zadanie</DialogHeader>
           <DialogBody>
-            {/* Formularz do tworzenia projektu */}
+
             <div className="flex flex-row space-x-2 w-full">
               <div className="flex flex-col flex-grow space-y-3">
                 <Input
@@ -316,6 +312,7 @@ export default function MainCalendar() {
                       onChange={(date) => setEndDate(date)}
                       showTimeSelect
                       closeOnScroll={true}
+                      minDate={startDate}
                     //     customTimeInput={<ExampleCustomTimeInput />}
                     />
                   </div>

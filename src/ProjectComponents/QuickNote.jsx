@@ -29,7 +29,7 @@ export default function QuickNote() {
         };
         // Wysyłanie zapytania PUT do zaktualizowania notatki
         const response = await RequestHandler.put("/api/notes", requestBody, auth.getToken());
-        console.log(response)
+        location.reload()
     };
 
     return (
